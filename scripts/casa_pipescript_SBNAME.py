@@ -2,7 +2,12 @@ import glob as glob
 __rethrow_casa_exceptions=True
 pipelinemode='automatic'
 
-MyVis = glob.glob('../calibrated/*.ms.split.cal')
+#### THIS IS THE ONLY LINE YOU SHOULD NEED TO EDIT
+#### FOR THE FIRST RUN.
+MyVis = glob.glob('/PATH/TO/calibrated/*.ms.split.cal') 
+####
+####
+
 MyRobust = 0.5
 context = h_init()
 try:
