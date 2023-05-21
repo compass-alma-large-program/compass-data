@@ -1,0 +1,72 @@
+! Reduce the line and continuum observations
+
+sic parallel
+
+define char*32 datadir
+define char*16 basename
+define logical extract_continuum
+
+let datadir "../../../data/"
+let basename bhr71
+let name 'basename'"-a"
+let extract_continuum .true.
+let map_robust 0 ! natural weighting
+
+! Convert the UVFITS files to UVT
+@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'basename'"/"'name'".uvt"
+let name 'datadir'"/reduced/"'basename'"/"'name'
+read uv 'name'
+
+! Extract the continuum
+if extract_continuum then
+
+    ! Filter channels with line emission
+    uv_preview
+    uv_filter
+
+    ! Resample the UV table to reduce its size
+    uv_compress /continuum
+
+    ! Make the continuum map and clean it
+    uv_map /continuum
+    clean
+    
+    ! Save the continuum UV table and image
+    write uv 'name'-cont
+    write clean 'name'-cont
+
+    ! Re-read original file
+    read uv 'name'
+endif
+
+! Remove a baseline
+uv_preview
+uv_baseline
+
+! Make the line datacube cube and clean it
+uv_map
+clean
+
+! Save the UV table and datacube
+write uv 'name'
+write clean 'name'
+
+! Export the continuum UV table and image to FITS
+if extract_continuum then
+    fits 'name'-cont.fits from 'name'-cont.lmv-clean /over
+    system "gzip -f "'name'"-cont.fits"
+    fits 'name'-cont.uvfits from 'name'-cont.uvt /over
+    system "gzip -f "'name'"-cont.uvfits"
+endif
+
+! Export the line UV table and datacube to FITS
+fits 'name'.fits from 'name'.lmv-clean /over
+system "gzip -f "'name'".fits"
+fits 'name'.uvfits from 'name'.uvt /over
+system "gzip -f "'name'".uvfits"
+
+! Cleanup
+sic delete selfcal-PHASE.last
+sic delete selfcal-PHASE.last~
+sic delete selfcal.tmp
+sic delete test.gdf
