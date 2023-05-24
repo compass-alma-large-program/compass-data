@@ -23,7 +23,6 @@ split(
     vis="uid___A002_X101c3b2_Xbcf0.ms.split.cal",
     outputvis=basename + ".ms",
     datacolumn="data",
-    timebin="30s",
     intent="OBSERVE_TARGET#ON_SOURCE",
     field="BHR71-IRS1",
     spw="25,27,29,31",
