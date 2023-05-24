@@ -5,11 +5,13 @@ sic parallel
 define char*32 datadir
 define char*16 basename
 define logical extract_continuum
+define logical self_calibrate
 
 let datadir "../../../data/"
 let basename bhr71
 let name 'basename'"-a"
 let extract_continuum .true.
+let self_calibrate .true.
 let map_robust 0 ! natural weighting
 
 ! Convert the UVFITS files to UVT
@@ -17,8 +19,23 @@ let map_robust 0 ! natural weighting
 let name 'datadir'"/reduced/"'basename'"/"'name'
 read uv 'name'
 
+! Self-calibration
+if self_calibrate then
+    let self_display .false.
+    let self_flag .true.
+    let self_times 10 10 /resize
+    selfcal phase
+    selfcal apply
+endif
+
+! Time-average
+uv_time
+
 ! Extract the continuum
 if extract_continuum then
+
+    ! Save the original UV table
+    write uv 'name'
 
     ! Filter channels with line emission
     uv_preview
@@ -35,7 +52,7 @@ if extract_continuum then
     write uv 'name'-cont
     write clean 'name'-cont
 
-    ! Re-read original file
+    ! Restore the original UV table
     read uv 'name'
 endif
 
