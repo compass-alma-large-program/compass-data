@@ -47,10 +47,11 @@ if extract_continuum then
     ! Make the continuum map and clean it
     uv_map /continuum
     clean
+    primary
     
     ! Save the continuum UV table and image
     write uv 'name'-cont
-    write clean 'name'-cont
+    write sky 'name'-cont
 
     ! Restore the original UV table
     read uv 'name'
@@ -63,21 +64,22 @@ uv_baseline
 ! Make the line datacube cube and clean it
 uv_map
 clean
+primary
 
 ! Save the UV table and datacube
 write uv 'name'
-write clean 'name'
+write sky 'name'
 
 ! Export the continuum UV table and image to FITS
 if extract_continuum then
-    fits 'name'-cont.fits from 'name'-cont.lmv-clean /over
+    fits 'name'-cont.fits from 'name'-cont.lmv-sky /over
     system "gzip -f "'name'"-cont.fits"
     fits 'name'-cont.uvfits from 'name'-cont.uvt /over
     system "gzip -f "'name'"-cont.uvfits"
 endif
 
 ! Export the line UV table and datacube to FITS
-fits 'name'.fits from 'name'.lmv-clean /over
+fits 'name'.fits from 'name'.lmv-sky /over
 system "gzip -f "'name'".fits"
 fits 'name'.uvfits from 'name'.uvt /over
 system "gzip -f "'name'".uvfits"
