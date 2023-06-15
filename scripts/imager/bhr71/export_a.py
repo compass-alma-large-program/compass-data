@@ -8,59 +8,66 @@ import glob
 import shutil
 
 basename = "bhr71-a"
+uid = "uid___A002_X101c3b2_Xbcf0"
+field="BHR71-IRS1"
+spws = [25, 27, 29, 31]
 datadir = "../../../data/calibrated/"
 inputdir = os.path.realpath(datadir + "/ms")
 outputdir = os.path.realpath(datadir + "/uvfits")
-__rethrow_casa_exceptions = True
 
-# Extract the data
+__rethrow_casa_exceptions = True
 
 os.chdir(inputdir)
 
-shutil.rmtree(basename + ".ms", ignore_errors=True)
+for spw in spws:
+    name = basename + "-spw%i" % spw
 
-split(
-    vis="uid___A002_X101c3b2_Xbcf0.ms.split.cal",
-    outputvis=basename + ".ms",
-    datacolumn="data",
-    intent="OBSERVE_TARGET#ON_SOURCE",
-    field="BHR71-IRS1",
-    spw="25,27,29,31",
-    keepflags=False,
-)
+    # Extract the data
 
-# Convert the velocity frame to LSR
+    shutil.rmtree(name + ".ms", ignore_errors=True)
+    split(
+        vis=uid + ".ms.split.cal",
+        outputvis=name + ".ms",
+        datacolumn="data",
+        intent="OBSERVE_TARGET#ON_SOURCE",
+        field=field,
+        spw="%i" % spw,
+        keepflags=False,
+    )
 
-shutil.rmtree(basename + "-cvel.ms", ignore_errors=True)
+    # Convert the velocity frame to LSR
 
-cvel2(
-    vis=basename + ".ms",
-    outputvis=basename + "-cvel.ms",
-    spw="0,1,2,3",
-    outframe="LSRK",
-)
+    shutil.rmtree(name + "-cvel.ms", ignore_errors=True)
+    cvel2(
+        vis=name + ".ms",
+        outputvis=name + "-cvel.ms",
+        outframe="LSRK",
+    )
 
-# Export the MS to UVFITS
+    # Export the MS to UVFITS
+    
+    exportuvfits(
+        vis=name + "-cvel.ms",
+        fitsfile=name + ".uvfits",
+        datacolumn="data",
+        multisource=False,
+        overwrite=True,
+    )
 
-exportuvfits(
-    vis=basename + "-cvel.ms",
-    fitsfile=basename + ".uvfits",
-    datacolumn="data",
-    multisource=False,
-    overwrite=True,
-)
+    # Move the file to the output directory
 
-# Move the file to the output directory
+    try:
+        os.remove(outputdir + "/" + name + ".uvfits")
+    except OSError:
+        pass
+    shutil.move(name + ".uvfits", outputdir)
 
-try:
-    os.remove(outputdir + "/" + basename + ".uvfits")
-except OSError:
-    pass
-shutil.move(basename + ".uvfits", outputdir)
+    # Remove intermediate files
 
-# Remove intermediate files and CASA logs
+    shutil.rmtree(name + ".ms", ignore_errors=True)
+    shutil.rmtree(name + "-cvel.ms", ignore_errors=True)
 
-shutil.rmtree(basename + ".ms", ignore_errors=True)
-shutil.rmtree(basename + "-cvel.ms", ignore_errors=True)
+# Remove CASA logs
+
 for f in glob.glob("*.last"):
     os.remove(f)
