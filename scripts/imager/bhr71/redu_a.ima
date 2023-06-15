@@ -14,6 +14,9 @@ let extract_continuum .true.
 let self_calibrate .true.
 let map_robust 0 ! natural weighting
 
+! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
+let clean_nkeep 70
+
 ! Convert the UVFITS files to UVT
 @ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'basename'"/"'name'".uvt"
 let name 'datadir'"/reduced/"'basename'"/"'name'
