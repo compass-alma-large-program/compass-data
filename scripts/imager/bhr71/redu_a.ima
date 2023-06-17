@@ -4,12 +4,15 @@ sic parallel
 
 define char*32 datadir
 define char*16 basename
+define char*8 setting
+define char*8 spws[4]
 define logical extract_continuum
 define logical self_calibrate
 
 let datadir "../../../data/"
 let basename bhr71
-let name 'basename'"-a"
+let setting a
+let spws 25 27 29 31
 let extract_continuum .true.
 let self_calibrate .true.
 let map_robust 0 ! natural weighting
@@ -17,28 +20,42 @@ let map_robust 0 ! natural weighting
 ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
 let clean_nkeep 70
 
-! Convert the UVFITS files to UVT
-@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'basename'"/"'name'".uvt"
-let name 'datadir'"/reduced/"'basename'"/"'name'
+for spw /in spws
+
+    let name 'basename'"-"'setting'"-spw"'spw'
+
+    ! Convert the UVFITS files to UVT
+    @ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'basename'"/"'name'".uvt"
+    let name 'datadir'"/reduced/"'basename'"/"'name'
+    read uv 'name'
+
+    ! Self-calibration
+    if self_calibrate then
+	let self_display .false.
+	let self_flag .true.
+	let self_times 10 10 /resize
+	selfcal phase
+	selfcal apply
+	pause
+    endif
+
+    ! Time-average
+    uv_time
+
+    ! Save the UV table
+    write uv 'name'
+next
+
+! Average the spectral windows
+
+let name 'datadir'"/reduced/"'basename'"/"'basename'"-"'setting'
+sic find 'name'"-spw*.uvt"
+uv_merge 'name' /files dir%file /mode concat
 read uv 'name'
-
-! Self-calibration
-if self_calibrate then
-    let self_display .false.
-    let self_flag .true.
-    let self_times 10 10 /resize
-    selfcal phase
-    selfcal apply
-endif
-
-! Time-average
-uv_time
+pause
 
 ! Extract the continuum
 if extract_continuum then
-
-    ! Save the original UV table
-    write uv 'name'
 
     ! Filter channels with line emission
     uv_preview
