@@ -6,6 +6,7 @@ Export the MS data to UVFITS
 import os
 import glob
 import shutil
+import tarfile
 
 basename = "bhr71-a"
 uid = "uid___A002_X101c3b2_Xbcf0"
@@ -18,6 +19,11 @@ outputdir = os.path.realpath(datadir + "/uvfits")
 __rethrow_casa_exceptions = True
 
 os.chdir(inputdir)
+
+# Untar the file
+
+with tarfile.open(uid + ".ms.split.cal.tar") as tar:
+    tar.extractall()
 
 for spw in spws:
     name = basename + "-spw%i" % spw
@@ -71,3 +77,7 @@ for spw in spws:
 
 for f in glob.glob("*.last"):
     os.remove(f)
+
+# Remove the untarred directory
+
+shutil.rmtree(uid + ".ms.split.cal", ignore_errors=True)
