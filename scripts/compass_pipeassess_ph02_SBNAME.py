@@ -15,6 +15,10 @@ import matplotlib.pyplot as plt
 ## target name here should match the text in the image name
 targetname = 'BHR71-IRS1'
 
+## define the region for extracting the spectrum
+## default: 'center' (10x10 pixels box); allowed: 'masked_region', 'center'
+region = 'center'
+
 ## image list of all SPWs
 imlist = glob.glob('*.'+targetname+'_sci.*.cube.I.iter1.image.pbcor')
 ## list of mask images (if needed for assessment)
@@ -35,7 +39,10 @@ boxstr = str(blcx) + ','+str(blcy)+','+str(trcx)+','+str(trcy)
 
 ## Write out the spectrum in the masked region of the image for each SPW
 for ii in np.arange(np.size(imlist)):
-    specflux(imagename=imlist[ii], unit="GHz", logfile=imlist[ii]+".spec.txt",box=boxstr,overwrite=True)
+    if region == 'center':
+        specflux(imagename=imlist[ii], unit="GHz", logfile=imlist[ii]+".spec.txt",box=boxstr,overwrite=True)
+    elif region == 'masked_region'
+        specflux(imagename=imlist[ii], unit="GHz", logfile=imlist[ii]+".spec.txt",mask=f"mask({masklist[ii]})",overwrite=True)
     f = open(imlist[ii]+".spec.txt",'r')
     data = np.genfromtxt(f,delimiter=None,skip_header=4)
     plt.plot(data[:,2],data[:,4]*1e3,'o')
