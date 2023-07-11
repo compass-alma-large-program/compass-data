@@ -12,7 +12,7 @@ basename = "bhr71-a"
 uid = "uid___A002_X101c3b2_Xbcf0"
 field="BHR71-IRS1"
 spws = [25, 27, 29, 31]
-datadir = "../../../data/calibrated/"
+datadir = "../../../../data/calibrated/"
 inputdir = os.path.realpath(datadir + "/ms")
 outputdir = os.path.realpath(datadir + "/uvfits")
 
