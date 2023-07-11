@@ -10,7 +10,7 @@ define logical extract_continuum
 define logical self_calibrate
 define logical delete_intermediate_files
 
-let datadir "../../../data/"
+let datadir "../../../../data/"
 let basename bhr71
 let setting a
 let spws 25 27 29 31
