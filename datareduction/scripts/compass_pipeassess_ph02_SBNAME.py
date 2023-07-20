@@ -41,7 +41,7 @@ boxstr = str(blcx) + ','+str(blcy)+','+str(trcx)+','+str(trcy)
 for ii in np.arange(np.size(imlist)):
     if region == 'center':
         specflux(imagename=imlist[ii], unit="GHz", logfile=imlist[ii]+".spec.txt",box=boxstr,overwrite=True)
-    elif region == 'masked_region'
+    elif region == 'masked_region':
         specflux(imagename=imlist[ii], unit="GHz", logfile=imlist[ii]+".spec.txt",mask=f"mask({masklist[ii]})",overwrite=True)
     f = open(imlist[ii]+".spec.txt",'r')
     data = np.genfromtxt(f,delimiter=None,skip_header=4)
