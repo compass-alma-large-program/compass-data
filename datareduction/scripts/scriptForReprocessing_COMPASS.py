@@ -234,16 +234,16 @@ if args.image:
     # make the images
     if make_mfs_images:
         if robust:
-            hif_makeimlist(specmode='mfs', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
+            hif_makeimlist(specmode='mfs', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, hm_cell=hm_cell,nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
         else:
-            hif_makeimlist(specmode='mfs', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
+            hif_makeimlist(specmode='mfs', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, hm_cell=hm_cell,nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
         hif_makeimages(pipelinemode="automatic")
 
     if make_cont_images:
         if robust:
-            hif_makeimlist(specmode='cont', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
+            hif_makeimlist(specmode='cont', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize,hm_cell=hm_cell, nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
         else:
-            hif_makeimlist(specmode='cont', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
+            hif_makeimlist(specmode='cont', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, hm_cell=hm_cell,nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
         hif_makeimages(pipelinemode="automatic")
 
 
@@ -255,16 +255,16 @@ if args.image:
     #else:
     if make_cube_images:
             if robust:
-                hif_makeimlist(specmode='cube', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
+                hif_makeimlist(specmode='cube', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize,hm_cell=hm_cell, nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
             else:
-                hif_makeimlist(specmode='cube', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
+                hif_makeimlist(specmode='cube', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, hm_cell=hm_cell,nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
             hif_makeimages(pipelinemode="automatic")
 
     if make_repBW_images:
             if robust:
-                hif_makeimlist(specmode='repBW', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
+                hif_makeimlist(specmode='repBW', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, hm_cell=hm_cell,nbins=nbins, uvtaper=uvtaper, robust=robust, phasecenter=phasecenter, field=field)
             else:
-                hif_makeimlist(specmode='repBW', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
+                hif_makeimlist(specmode='repBW', spw=spw, uvrange=uvrange, hm_imsize=hm_imsize, hm_cell=hm_cell,nbins=nbins, uvtaper=uvtaper, phasecenter=phasecenter, field=field)            
             hif_makeimages(pipelinemode="automatic")
     
     # move the images there:
