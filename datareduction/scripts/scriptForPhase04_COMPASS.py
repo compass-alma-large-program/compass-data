@@ -16,7 +16,7 @@ import glob
 ####################
 
 visname = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/measurement_sets/uid___A002_X101c3b2_Xbcf0_targets_line.ms' ## 
-outImageDirectory = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/images_phase04/' ## Specify where you want your output images to go
+outImageDirectory = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/modified_images_folder_phase04/' ## Specify where you want your output images to go
 
 doSetup = True
 ####################
