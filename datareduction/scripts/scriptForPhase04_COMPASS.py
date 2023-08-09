@@ -16,6 +16,7 @@ import glob
 ####################
 
 visname = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/measurement_sets/uid___A002_X101c3b2_Xbcf0_targets_line.ms' ## 
+outImageDirectory = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/images_phase04/' ## Specify where you want your output images to go
 
 doSetup = True
 ####################
@@ -26,7 +27,7 @@ doSetup = True
 
 def setup_to_copy():
     os.mkdir('working_reprocess_ph04')
-    files = glob.glob('modified_images_folder_ph03/*spw*.cube.I.iter1.*')
+    files = glob.glob('images_contsub/*spw*.cube.I.iter1.*') ## check that the directory is correct
     for ff in files:
         filename = ff.split('/')[1] #get just the filename after the directory name (separated by /)
         newfilename = re.sub('iter1','iter2',filename) #replace iter1 with iter2 in the filename
@@ -41,7 +42,7 @@ def setup_to_copy():
 ####################
 
 if doSetup: 
-    print('doing setup'
+    print('doing setup')
     setup_to_copy()
 
 os.chdir('working_reprocess_ph04/')
@@ -57,15 +58,17 @@ os.chdir('working_reprocess_ph04/')
 ## There should be one for each SPW
 ## Make sure niter!=0 (otherwise you have the wrong command)
 
+## EDIT/CHECK ALL 4 FOLLOWING TCLEAN COMMANDS
 ## Make these changes:
 #[0] vis=[visname]
 #[1] imagename='' should end with iter2, not iter1
 #[2] threshold=newthreshold (which is set to '0.0038Jy')
-#[3] If there is a line break in phasecenter, remove the break, otherwise you will get an EOL error
+#[3] edit start= with correct start Frequency (from weblog)
+#[4] check antenna list (from weblog)
+#[5] check scan numbers (from weblog)
+#[6] If there is a line break in phasecenter, remove the break, otherwise you will get an EOL error.  It should look like phasecenter='ICRS 12:01:36.4988 -065.08.49.381' (with correct coordinates)
 
 newthreshold='0.0038Jy'
-
-#### EDIT/CHECK ALL 4 FOLLOWING TCLEAN COMMANDS
 
 tclean(vis=visname, field='BHR71-IRS1', ## EDIT THIS LINE with vis=visname
        spw=['25'],
@@ -139,4 +142,27 @@ tclean(vis=visname, field='BHR71-IRS1',
        minpercentchange=1.0, fastnoise=False, restart=True, savemodel='none',
        calcres=False, calcpsf=False, parallel=True)
 
+####################
+## Move images to outpImageDirectory
+####################
 
+## First check if that directory exists
+if not glob.glob(outImageDirectory):
+        # make directory to move images to
+        os.mkdir(outImageDirectory)
+else:
+        print('ERROR: images directory "'+outImageDirectory+'" already exists. Will not overwrite. Please specify a new folder name at the start of the script; then just copy-paste the final lines to copy.')
+        sys.exit()
+
+
+## Then make the move
+
+os.system("mv *.image "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.image.pbcor "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.mask "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.mask.flattened "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.model "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.pb "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.psf "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.residual "+outImageDirectory+" 2> /dev/null")
+os.system("mv *.sumwt "+outImageDirectory+" 2> /dev/null")
