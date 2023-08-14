@@ -199,4 +199,5 @@ if makeFits:
     ## These next lines move the fits files into the toERDA directory
     os.system('mv '+ph01dir+'*cube.I.iter1.image.pbcor.fits .')
     os.system('mv '+ph03dir+'*cube.I.iter1.image.pbcor.fits .')
+    os.system('mv '+ph03dir+'*cont.I.iter1.image.pbcor.fits .')
     os.system('mv '+ph04dir+'*cube.I.iter2.image.pbcor.fits .')
