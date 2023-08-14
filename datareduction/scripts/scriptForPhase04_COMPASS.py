@@ -15,10 +15,12 @@ import glob
 #### INPUT PARAMETERS IF NEEDED
 ####################
 
-visname = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/measurement_sets/uid___A002_X101c3b2_Xbcf0_targets_line.ms' ## 
-outImageDirectory = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/modified_images_folder_phase04/' ## Specify where you want your output images to go
+workingDirectory = '/lustre/cv/projects/COMPASS/aplunkett/BHR71-IR_a_07_TM1/working/calibrated_final/'
+visname = workingDirectory+'measurement_sets/uid___A002_X101c3b2_Xbcf0_targets_line.ms' ## 
+outImageDirectory = workingDirectory+'modified_images_folder_ph04/' ## Specify where you want your output images to go
 
-doSetup = True
+doSetup = True #this is set as True the first time if you need to setup the files in proper places
+makeFits = True #this is set as True if you want to make FITS files from CASA images
 ####################
 
 ####################
@@ -166,3 +168,35 @@ os.system("mv *.pb "+outImageDirectory+" 2> /dev/null")
 os.system("mv *.psf "+outImageDirectory+" 2> /dev/null")
 os.system("mv *.residual "+outImageDirectory+" 2> /dev/null")
 os.system("mv *.sumwt "+outImageDirectory+" 2> /dev/null")
+
+####################
+## While in CASA, option to make FITS files from CASA image formats
+## Move the FITS files into the directory called toERDA, 
+## This makes it easier to then upload them to a central location (ERDA)
+####################
+
+if makeFits:
+    ## Make, and navigate to a directory called toERDA
+    os.system("mkdir toERDA")
+    os.chdir('toERDA')
+    ## Identify the directories for Phases 1, 3, 4
+    ph01dir = workingDirectory+'modified_images_folder_ph01/'
+    ph03dir = workingDirectory+'modified_images_folder_ph03/'
+    ph04dir = outImageDirectory
+    ## Move cubes from each phase,  and one  continuum image
+    for file in glob.glob(ph01dir+'*cube.I.iter1.image.pbcor'):
+        print('#### making FITS file for: \n'+file)
+        exportfits(imagename=file,fitsimage=file+'.fits')
+    for file in glob.glob(ph03dir+'*cube.I.iter1.image.pbcor'):
+        print('#### making FITS file for: \n'+file)
+        exportfits(imagename=file,fitsimage=file+'.fits')
+    for file in glob.glob(ph03dir+'*cont.I.iter1.image.pbcor'):
+        print('#### making FITS file for: \n'+file)
+        exportfits(imagename=file,fitsimage=file+'.fits')
+    for file in glob.glob(ph04dir+'*cube.I.iter2.image.pbcor'):
+        print('#### making FITS file for: \n'+file)
+        exportfits(imagename=file,fitsimage=file+'.fits')
+    ## These next lines move the fits files into the toERDA directory
+    os.system('mv '+ph01dir+'*cube.I.iter1.image.pbcor.fits .')
+    os.system('mv '+ph03dir+'*cube.I.iter1.image.pbcor.fits .')
+    os.system('mv '+ph04dir+'*cube.I.iter2.image.pbcor.fits .')
