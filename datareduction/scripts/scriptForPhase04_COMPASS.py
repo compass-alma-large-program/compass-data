@@ -29,7 +29,7 @@ makeFits = True #this is set as True if you want to make FITS files from CASA im
 
 def setup_to_copy():
     os.mkdir('working_reprocess_ph04')
-    files = glob.glob('images_contsub/*spw*.cube.I.iter1.*') ## check that the directory is correct
+    files = glob.glob('modified_images_folder_ph03/*spw*.cube.I.iter1.*') ## check that the directory is correct
     for ff in files:
         filename = ff.split('/')[1] #get just the filename after the directory name (separated by /)
         newfilename = re.sub('iter1','iter2',filename) #replace iter1 with iter2 in the filename
