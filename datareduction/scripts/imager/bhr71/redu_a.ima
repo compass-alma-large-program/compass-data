@@ -18,6 +18,8 @@ let extract_continuum .true.
 let self_calibrate .true.
 let delete_intermediate_files .true.
 let map_robust 1
+let map_size 500 500
+let map_cell 0.064 0.064
 
 ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
 let clean_nkeep 70
