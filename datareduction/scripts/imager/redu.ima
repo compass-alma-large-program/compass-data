@@ -1,0 +1,147 @@
+! Reduction pipeline for the line and continuum observations
+
+begin procedure redu_init
+
+    ! Define user parameters
+    
+    if .not.exist(redu) then
+
+	define structure redu /global
+	define char*16 redu%basename /global
+	define char*8 redu%setting /global
+	define logical redu%extract_continuum /global
+	define logical redu%self_calibrate /global
+	define logical redu%delete_intermediate_files /global
+
+	let redu%extract_continuum .true.
+	let redu%self_calibrate .true.
+	let redu%delete_intermediate_files .true.
+	
+    endif
+    
+end procedure redu_init	
+
+
+begin procedure redu_run
+
+    ! Run the reduction pipeline
+
+    define char*32 datadir
+    define char*8 spws[4]
+
+    let datadir "../../../../data/"
+    let spws 25 27 29 31
+    let map_robust 1
+    let map_size 500 500
+    let map_cell 0.064 0.064
+
+    ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
+    let clean_nkeep 70
+    
+    for spw /in spws
+	
+	let name 'redu%basename'"-"'redu%setting'"-spw"'spw'
+	
+	! Convert the UVFITS files to UVT
+	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%basename'"/"'name'".uvt"
+	let name 'datadir'"/reduced/"'redu%basename'"/"'name'
+	read uv 'name'
+	
+	! Self-calibration
+	if redu%self_calibrate then
+	    let self_display .false.
+	    let self_flag .true.
+	    let self_times 10 10 /resize
+	    selfcal phase
+	    selfcal apply
+	endif
+	
+	! Time-average
+	uv_time
+	
+	! Save the UV table
+	write uv 'name'
+	
+	! Create UV tables for the lines and for the continuum
+	uv_preview
+	if redu%extract_continuum then
+	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
+	    ! FIXME: uv_split ignores the path for the continuum table
+	    sic rename 'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%basename'"/"
+	else
+	    uv_split /file 'name' 'name'"-lines"
+	endif
+	
+	! Make the continuum map and clean it
+	if redu%extract_continuum then
+	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
+	    read uv 'name'
+	    uv_map /continuum
+	    clean
+	    primary
+	    write sky 'name'
+	endif
+	
+	! Make the line datacube cube and clean it
+	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+	read uv 'name'
+	uv_map
+	clean
+	primary
+	write sky 'name'
+	
+	! Export the continuum UV table and image to FITS
+	if redu%extract_continuum then
+	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
+	    fits 'name'.fits from 'name'.lmv-sky /over
+	    system "gzip -f "'name'".fits"
+	    fits 'name'.uvfits from 'name'.uvt /over
+	    system "gzip -f "'name'".uvfits"
+	endif
+	
+	! Export the line UV table and datacube to FITS
+	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+	fits 'name'.fits from 'name'.lmv-sky /over
+	system "gzip -f "'name'".fits"
+	fits 'name'.uvfits from 'name'.uvt /over
+	system "gzip -f "'name'".uvfits"
+	
+	! Remove intermediate files
+	if redu%delete_intermediate_files then
+	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'
+	    sic delete 'name'".uvt"
+	    sic delete 'name'"-cont.uvt"
+	    sic delete 'name'"-cont.lmv-sky"
+	    sic delete 'name'"-lines.uvt"
+	    sic delete 'name'"-lines.lmv-sky"
+	endif
+    next
+    
+end procedure redu_run
+
+
+begin procedure redu_cleanup
+
+    ! Cleanup files and variables
+    
+    sic delete selfcal-PHASE.last
+    sic delete selfcal-PHASE.last~
+    sic delete selfcal.tmp
+    sic delete test.gdf
+    delete /var redu
+
+end procedure redu_cleanup
+
+
+! Main program
+
+if "x&1".eq."xinit" then
+    @ redu_init
+else if "x&1".eq."xrun" then
+    @ redu_run
+else if "x&1".eq."xclean" then
+    @ redu_cleanup
+else
+    message e redu "Usage: redu COMMAND"
+    return base
+endif
