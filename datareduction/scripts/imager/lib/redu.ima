@@ -12,10 +12,12 @@ begin procedure redu_init
 	define logical redu%extract_continuum /global
 	define logical redu%self_calibrate /global
 	define logical redu%delete_intermediate_files /global
+	define logical redu%interactive /global
 
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
 	let redu%delete_intermediate_files .true.
+	let redu%interactive .false.
 	
     endif
     
@@ -46,6 +48,7 @@ begin procedure redu_run
 	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%basename'"/"'name'".uvt"
 	let name 'datadir'"/reduced/"'redu%basename'"/"'name'
 	read uv 'name'
+	if redu%interactive pause
 	
 	! Self-calibration
 	if redu%self_calibrate then
@@ -53,6 +56,7 @@ begin procedure redu_run
 	    let self_flag .true.
 	    let self_times 10 10 /resize
 	    selfcal phase
+	    if redu%interactive pause
 	    selfcal apply
 	endif
 	
@@ -64,6 +68,7 @@ begin procedure redu_run
 	
 	! Create UV tables for the lines and for the continuum
 	uv_preview
+	if redu%interactive pause
 	if redu%extract_continuum then
 	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
 	    ! FIXME: uv_split ignores the path for the continuum table
@@ -78,6 +83,7 @@ begin procedure redu_run
 	    read uv 'name'
 	    uv_map /continuum
 	    clean
+	    if redu%interactive pause
 	    primary
 	    write sky 'name'
 	endif
@@ -87,6 +93,7 @@ begin procedure redu_run
 	read uv 'name'
 	uv_map
 	clean
+	if redu%interactive pause
 	primary
 	write sky 'name'
 	
