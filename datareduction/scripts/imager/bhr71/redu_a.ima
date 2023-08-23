@@ -2,9 +2,9 @@
 
 sic parallel
 
-@ ../redu init
+@ ../lib/redu init
 let redu%basename bhr71
 let redu%setting a
 
-@ ../redu run
-@ ../redu clean
+@ ../lib/redu run
+@ ../lib/redu clean
