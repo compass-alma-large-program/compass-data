@@ -7,13 +7,17 @@ begin procedure redu_init
     if .not.exist(redu) then
 
 	define structure redu /global
+	
 	define char*16 redu%basename /global
 	define char*8 redu%setting /global
+	define char*8 redu%spws[4] /global
+	
 	define logical redu%extract_continuum /global
 	define logical redu%self_calibrate /global
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
 
+	let redu%spws 25 27 29 31
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
 	let redu%delete_intermediate_files .true.
@@ -29,10 +33,8 @@ begin procedure redu_run
     ! Run the reduction pipeline
 
     define char*32 datadir
-    define char*8 spws[4]
 
     let datadir "../../../../data/"
-    let spws 25 27 29 31
     let map_robust 1
     let map_size 500 500
     let map_cell 0.064 0.064
@@ -40,7 +42,7 @@ begin procedure redu_run
     ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
     let clean_nkeep 70
     
-    for spw /in spws
+    for spw /in redu%spws
 	
 	let name 'redu%basename'"-"'redu%setting'"-spw"'spw'
 	
