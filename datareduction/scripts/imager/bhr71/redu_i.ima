@@ -1,10 +1,10 @@
-! Reduce the BHR71 A setup data
+! Reduce the BHR71 I setup data
 
 sic parallel
 
 @ ../lib/redu init
 let redu%basename bhr71
-let redu%setting a
+let redu%setting i
 
 @ ../lib/redu run
 @ ../lib/redu clean
