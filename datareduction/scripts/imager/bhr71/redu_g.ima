@@ -1,0 +1,10 @@
+! Reduce the BHR71 G setup data
+
+sic parallel
+
+@ ../lib/redu init
+let redu%basename bhr71
+let redu%setting g
+
+@ ../lib/redu run
+@ ../lib/redu clean
