@@ -57,6 +57,8 @@ begin procedure redu_run
 	    let self_display .false.
 	    let self_flag .true.
 	    let self_times 10 10 /resize
+	    ! XXX: Redefine pause when redu%interactive is .false. ?
+	    if .not.redu%interactive symbol stop continue ! avoid pauses
 	    selfcal phase
 	    if redu%interactive pause
 	    selfcal apply
