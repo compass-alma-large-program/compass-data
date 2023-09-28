@@ -1,0 +1,28 @@
+! @ check_output.ima
+!
+!
+define integer nUVt
+define character myfilename*50
+
+sic find *.uvt RAW
+let nUVt dir%nfile
+define character mybasename*50[nUVt]
+for i 1 to nUVt
+ sic parse 'dir%file[i]' mybasename[i]
+next
+
+sic output check_output.res
+for i 1 to nUVt
+ sic find *'mybasename[i]'*.lmv-clean MAPS/
+ for fich /in dir%file
+  read clean MAPS/'fich'
+  stat
+  define head a MAPS/'fich' read
+  sic parse 'fich' myfilename
+  say a%dim[1] abs(a%convert[3,1]/sec) a%major*180*3600/pi a%minor*180*3600/pi a%pa*180/pi stat_noise*1000. clean%min*1000. clean%max*1000. " "'myfilename' /form I4 F6.3 F6.3 F6.3 F7.2 F7.3 F9.3 F7.1 A
+  dele /var a
+ next
+next
+sic output
+
+delete /var nUVt mybasename myfilename
