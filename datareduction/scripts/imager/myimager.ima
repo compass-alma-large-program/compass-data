@@ -1,0 +1,58 @@
+! @ myimager.ima
+!
+! This script assumes that uvfits files are present in the current directory.
+!
+define logical myDoSelfCal mySetSizes mySetRobust
+define integer mysize
+define real    mycell mymrob
+
+let myDoSelfCal YES     ! YES: pipeline decides whether or not to apply self-cal
+                        ! NO: no self-cal is attempted
+let mySetSizes  NO      ! YES: map size and pixel size imposed by user
+                        ! NO: map size and pixel size optimally set by pipeline
+let mySetRobust YES     ! YES: map_robust imposed by user
+                        ! NO: map_robust optimally set by pipeline
+
+if mySetSizes then
+ let mysize 576         ! map size in pixel imposed by user
+ let mycell 0.07        ! pixel size in arcsec imposed by user
+else
+ let mysize 0           ! pipeline will optimize it
+ let mycell 0.0         ! pipeline will optimize it
+endif
+if mySetRobust then
+ let mymrob -1.5        ! map_robust imposed by user
+endif
+
+sic parallel *          ! set parallel mode to use all CPU cores
+pipeline organize       ! organize directory sub-structure
+let all%mode SURVEY     ! set pipeline mode, see help pipeline /mode
+pipeline find           ! find and explore initial UV tables
+pipeline select         ! select UV tables to work on
+pipeline explore        ! explore data size and optimize map_robust
+if mySetRobust then
+ let map_robust mymrob  ! command to set map_robust manually
+endif
+if myDoSelfCal then
+ pipeline check         ! check if self-cal is needed and if it is possible
+ !let all%phase_times  10 10 10 /resize ! command to set phase_times manually
+ pipeline compute       ! compute self-cal solution
+ pipeline show          ! display phase and amplitude corrections
+ pipeline apply         ! apply self-cal if it was found to be possible
+else
+ let all%doself NO      ! do not attempt to perform self-cal
+endif
+pipeline time           ! time average UV tables
+let map_size mysize mysize
+let map_cell mycell mycell
+pipeline image          ! perform deconvolution
+pipeline sky            ! compute primary-beam corrected images and cubes
+pipeline save           ! save pipeline input parameters into all-memory.ima
+discard *               ! clear part of the RAM
+discard UV*
+@ proc_myimager         ! load auxiliary procedures
+@ split_linecont C-SCM  ! split lines and continuum (+ prim.-beam corr.)
+@ export_myfits         ! convert cubes and images to FITS files
+
+delete /var myDoSelfCal mySetSizes mySetRobust
+delete /var mysize mycell mymrob
