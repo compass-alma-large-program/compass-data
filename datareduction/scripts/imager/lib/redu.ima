@@ -33,6 +33,8 @@ begin procedure redu_run
     ! Run the reduction pipeline
 
     define char*32 datadir
+    define char*256 filelist /like redu%spws
+    define int ispw
 
     let datadir "../../../../data/"
     let map_robust 1
@@ -41,9 +43,10 @@ begin procedure redu_run
 
     ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
     let clean_nkeep 70
-    
+
+    let ispw 0
     for spw /in redu%spws
-	
+
 	let name 'redu%basename'"-"'redu%setting'"-spw"'spw'
 	
 	! Convert the UVFITS files to UVT
@@ -69,64 +72,81 @@ begin procedure redu_run
 	
 	! Save the UV table
 	write uv 'name'
+	let ispw ispw+1
+	let filelist[ispw] 'name'
 	
-	! Create UV tables for the lines and for the continuum
-	uv_preview
-	if redu%interactive pause
-	if redu%extract_continuum then
-	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
-	    ! FIXME: uv_split ignores the path for the continuum table
-	    sic rename 'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%basename'"/"
-	else
-	    uv_split /file 'name' 'name'"-lines"
-	endif
+    next
+
+    ! Merge the spectral windows
+    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'
+    if ispw.gt.1 then
+	uv_merge 'name' /file filelist /mode concat
+    else
+	sic copy 'filelist[1]'".uvt" 'name'".uvt"
+    endif
 	
-	! Make the continuum map and clean it
-	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
-	    read uv 'name'
-	    uv_map /continuum
-	    clean
-	    if redu%interactive pause
-	    primary
-	    write sky 'name'
-	endif
+    ! Create UV tables for the lines and for the continuum
+    read uv 'name'
+    uv_preview
+    if redu%interactive pause
+    if redu%extract_continuum then
+	uv_split /file 'name' 'name'"-lines" 'name'"-cont"
+	! FIXME: uv_split ignores the path for the continuum table
+	sic rename 'redu%basename'"-"'redu%setting'"-cont.uvt" 'datadir'"/reduced/"'redu%basename'"/"
+    else
+	uv_split /file 'name' 'name'"-lines"
+    endif
 	
-	! Make the line datacube cube and clean it
-	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+    ! Make the continuum map and clean it
+    if redu%extract_continuum then
+	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-cont"
 	read uv 'name'
-	uv_map
+	uv_map /continuum
 	clean
 	if redu%interactive pause
 	primary
 	write sky 'name'
+    endif
 	
-	! Export the continuum UV table and image to FITS
-	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
-	    fits 'name'.fits from 'name'.lmv-sky /over
-	    system "gzip -f "'name'".fits"
-	    fits 'name'.uvfits from 'name'.uvt /over
-	    system "gzip -f "'name'".uvfits"
-	endif
+    ! Make the line datacube cube and clean it
+    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-lines"
+    ! FIXME: Can we use less beams to speed-up the calculation and get a single dirty beam for all channels?
+    let beam_step -1
+    read uv 'name'
+    uv_map
+    clean
+    if redu%interactive pause
+    primary
+    write sky 'name'
 	
-	! Export the line UV table and datacube to FITS
-	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+    ! Export the continuum UV table and image to FITS
+    if redu%extract_continuum then
+	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-cont"
 	fits 'name'.fits from 'name'.lmv-sky /over
 	system "gzip -f "'name'".fits"
 	fits 'name'.uvfits from 'name'.uvt /over
 	system "gzip -f "'name'".uvfits"
+    endif
+
+    ! Export the line UV table and datacube to FITS
+    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-lines"
+    fits 'name'.fits from 'name'.lmv-sky /over
+    system "gzip -f "'name'".fits"
+    fits 'name'.uvfits from 'name'.uvt /over
+    system "gzip -f "'name'".uvfits"
 	
-	! Remove intermediate files
-	if redu%delete_intermediate_files then
-	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'
-	    sic delete 'name'".uvt"
-	    sic delete 'name'"-cont.uvt"
-	    sic delete 'name'"-cont.lmv-sky"
-	    sic delete 'name'"-lines.uvt"
-	    sic delete 'name'"-lines.lmv-sky"
-	endif
-    next
+    ! Remove intermediate files
+    if redu%delete_intermediate_files then
+	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'
+	for spw /in redu%spws
+	    sic delete 'name'"-spw"'spw'".uvt"
+	next
+	sic delete 'name'".uvt"
+	sic delete 'name'"-cont.uvt"
+	sic delete 'name'"-cont.lmv-sky"
+	sic delete 'name'"-lines.uvt"
+	sic delete 'name'"-lines.lmv-sky"
+    endif
     
 end procedure redu_run
 

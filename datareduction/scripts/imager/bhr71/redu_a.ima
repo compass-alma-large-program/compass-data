@@ -5,6 +5,9 @@ sic parallel
 @ ../lib/redu init
 let redu%basename bhr71
 let redu%setting a
+let redu%extract_continuum .false.
+let redu%delete_intermediate_files .false.
+let redu%spws 25 27 /resize
 
 @ ../lib/redu run
 @ ../lib/redu clean
