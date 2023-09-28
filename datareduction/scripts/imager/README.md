@@ -1,10 +1,15 @@
 Data reduction scripts for IMAGER using pipeline steps
 
+Files:
+myimager.ima: main IMAGER script
+proc_myimager.ima: auxiliary file that contains procedures used by myimager.ima
+check_output.ima: script to have a quick look at basic parameters of the output cubes and images produced by myimager.ima
+
 Prerequisites:
 IMAGER (>= 3.9-05)
 CASA (>= 6.5.6.22)
 
-Getting the calibrated visibilities and converting them to UVFITS:
+** Getting the calibrated visibilities and converting them to UVFITS:
 
 1. Put the measurement set in the working directory. Untar it if it is tared. This takes less than an hour.
 
@@ -20,7 +25,7 @@ The four spectral windows of the target source are extracted automatically and s
 The UVFITS files are automatically named SOURCE-FREQUENCY.uvfits with SOURCE the target source name in the measurement set and FREQUENCY
 the central frequency of the spectral window.
 
-Running the IMAGER script:
+** Running the IMAGER script:
 
 1. Put myimager.ima and proc_myimager.ima in the working directory
 2. Start IMAGER
@@ -52,3 +57,9 @@ The user can impose many parameters in IMAGER. In the current version of myimage
 
 The line starting with !let all%phase_times can be uncommented if the user wants to test the impact of changing the averaging time for the phase self-cal for
 instance.
+
+** Quick look at the results
+
+Run the script check_output.ima in IMAGER to extract basic information from the images and cubes produced by myimager.ima
+(map size, pixel size, beam size and position angle, noise level, minimum intensity, maximum intensity).
+This is written in an ASCII file check_output.res.
