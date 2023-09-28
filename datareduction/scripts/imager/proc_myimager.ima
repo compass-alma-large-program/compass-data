@@ -1,0 +1,102 @@
+begin procedure split_linecont
+  !
+  ! To run this procedure: @ split_linecont Input1
+  ! with Input1 = GLOBAL or GAUSS or SCM or C-SCM (see help map_continuum).
+  !
+  ! To run this procedure standalone, you first need to execute @ all-create
+  ! in order to have all%raw and all%maps defined.
+  !
+
+  define integer nUVt
+  define character myoutcube*50
+
+  ! Find base of file name of each spectral window
+  sic find *.uvt 'all%raw'
+  let nUVt dir%nfile
+  define character mybasename*50[nUVt]
+  for i 1 to nUVt
+   sic parse 'dir%file[i]' mybasename[i]
+  next
+  ! Loop on the SPWs
+  for i 1 to nUVt
+   ! Find cube that needs to be processed
+   sic find *'mybasename[i]'+A.lmv-clean 'all%maps'
+   ! Differentiate cases with or without selfcal
+   if dir%file[1][1:2].eq."s-" then
+    let myoutcube "s-"'mybasename[i]'
+   else
+    let myoutcube 'mybasename[i]'
+   endif
+   ! Read input cube
+   read CLEAN 'all%maps'/'dir%file[1]'
+   ! Derive continuum emission
+   map_continuum CLEAN /method &1
+   ! Save continuum image
+   write CONTINUUM 'all%maps'/'myoutcube'_c.lmv-clean
+   !! Compute and save line (continuum-subtracted) cube
+   !map_combine 'all%maps'/'myoutcube'_l.lmv-clean = CLEAN - CONTINUUM
+   ! Compute line (continuum-subtracted) cube
+   sic copy 'all%maps'/'myoutcube'+A.lmv-clean 'all%maps'/'myoutcube'_l.lmv-clean
+   define image mycont 'all%maps'/'myoutcube'_c.lmv-clean read
+   define image mycube 'all%maps'/'myoutcube'_l.lmv-clean write
+   for k 1 to mycube%dim[3]
+    let mycube[,,k] mycube[,,k]-mycont /where abs(mycube[,,k]-mycube%blank[1]).gt.abs(mycube%blank[2]).and.abs(mycont-mycont%blank[1]).gt.abs(mycont%blank[2])
+   next
+   ! Compute extrema in continuum-subtracted data
+   header mycube /extrema
+   delete /var mycube mycont
+   ! Produce primary beam corrected continuum image and line cube
+   read CLEAN 'all%maps'/'myoutcube'_c.lmv-clean
+   primary
+   write SKY 'all%maps'/'myoutcube'_c
+   write PRIMARY tmp.pbeam
+   transpose tmp.pbeam 'all%maps'/'myoutcube'_c.pbeam 231
+   sic delete tmp.pbeam
+   read CLEAN 'all%maps'/'myoutcube'_l.lmv-clean
+   primary
+   write SKY 'all%maps'/'myoutcube'_l
+   write PRIMARY tmp.pbeam
+   transpose tmp.pbeam 'all%maps'/'myoutcube'_l.pbeam 231
+   sic delete tmp.pbeam
+   discard *
+  next
+
+  delete /var nUVt myoutcube mybasename
+
+end procedure split_linecont
+
+begin procedure export_myfits
+  !
+  ! @ export_myfits
+  !
+  ! To run this procedure standalone, you first need to execute @ all-create
+  ! in order to have all%maps defined.
+  !
+  define character*10 myfitsdir
+
+  let myfitsdir "FITS/"
+  if .not.file(myfitsdir) then
+    sic mkdir 'myfitsdir'
+  endif
+  for j 1 to 2
+   if j.eq.1 then
+    sic find *_c.lmv-clean 'all%maps'  ! continuum images
+   else if j.eq.2 then
+    sic find *_l.lmv-clean 'all%maps'  ! line cubes
+   endif
+   define character mybasename*50[dir%nfile]
+   for i 1 to dir%nfile
+    sic parse 'dir%file[i]' mybasename[i]
+    ! File not corrected for primary beam response
+    fits 'myfitsdir'/'mybasename[i]'.fits from 'all%maps'/'mybasename[i]'.lmv-clean /overwrite
+    ! File corrected for primary beam response
+    fits 'myfitsdir'/'mybasename[i]'_pbcor.fits from 'all%maps'/'mybasename[i]'.lmv-sky /overwrite
+    ! File containing primary beam
+    fits 'myfitsdir'/'mybasename[i]'_pbeam.fits from 'all%maps'/'mybasename[i]'.pbeam /overwrite
+   next
+   delete /var mybasename
+  next
+
+  delete /var myfitsdir
+
+end procedure export_myfits
