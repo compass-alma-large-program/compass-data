@@ -1,0 +1,10 @@
+! Reduce the B335 F setup data
+
+sic parallel
+
+@ ../lib/redu init
+let redu%basename b335
+let redu%setting f
+
+@ ../lib/redu run
+@ ../lib/redu clean
