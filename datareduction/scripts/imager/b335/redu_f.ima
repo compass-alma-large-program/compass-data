@@ -6,5 +6,9 @@ sic parallel
 let redu%basename b335
 let redu%setting f
 
+! Increase clipping value for line detection
+! See https://github.com/adeleplunkett/compass/issues/9
+let redu%uv_preview_clip 5.9
 @ ../lib/redu run
+
 @ ../lib/redu clean
