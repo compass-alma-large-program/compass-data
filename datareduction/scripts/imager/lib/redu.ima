@@ -11,6 +11,7 @@ begin procedure redu_init
 	define char*16 redu%basename /global
 	define char*8 redu%setting /global
 	define char*8 redu%spws[4] /global
+	define real redu%uv_preview_clip /global
 	
 	define logical redu%extract_continuum /global
 	define logical redu%self_calibrate /global
@@ -18,6 +19,7 @@ begin procedure redu_init
 	define logical redu%interactive /global
 
 	let redu%spws 25 27 29 31
+	let redu%uv_preview_clip 3
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
 	let redu%delete_intermediate_files .true.
@@ -71,7 +73,7 @@ begin procedure redu_run
 	write uv 'name'
 	
 	! Create UV tables for the lines and for the continuum
-	uv_preview
+	uv_preview clip 'redu%uv_preview_clip'
 	if redu%interactive pause
 	if redu%extract_continuum then
 	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
