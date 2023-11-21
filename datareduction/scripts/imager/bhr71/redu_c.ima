@@ -7,7 +7,7 @@ sic parallel
 let redu%basename bhr71
 let redu%setting c
 
-let redu%map_size 500 500
+let redu%map_size 562 562
 let redu%map_cell 0.064 0.064
 
 @ ../lib/redu run
