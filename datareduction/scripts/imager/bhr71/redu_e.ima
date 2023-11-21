@@ -3,8 +3,12 @@
 sic parallel
 
 @ ../lib/redu init
+
 let redu%basename bhr71
 let redu%setting e
+
+let redu%map_size 500 500
+let redu%map_cell 0.064 0.064
 
 @ ../lib/redu run
 @ ../lib/redu clean
