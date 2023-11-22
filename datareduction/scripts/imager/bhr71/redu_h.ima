@@ -9,6 +9,7 @@ let redu%setting h
 
 let redu%map_size 562 562
 let redu%map_cell 0.064 0.064
+let redu%primary_truncate .1
 
 @ ../lib/redu run
 @ ../lib/redu clean
