@@ -16,6 +16,7 @@ begin procedure redu_init
 	define real redu%map_robust /global
 	define real redu%map_size[2] /global
 	define real redu%map_cell[2] /global
+	define real redu%primary_truncate /global
 	
 	define logical redu%extract_continuum /global
 	define logical redu%self_calibrate /global
@@ -27,6 +28,7 @@ begin procedure redu_init
 	let redu%map_robust 1
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
+	let redu%primary_truncate .2
 
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
@@ -98,7 +100,7 @@ begin procedure redu_run
 	    uv_map /continuum
 	    clean
 	    if redu%interactive pause
-	    primary
+	    primary /truncate redu%primary_truncate
 	    write sky 'name'
 	endif
 	
@@ -108,7 +110,7 @@ begin procedure redu_run
 	uv_map
 	clean
 	if redu%interactive pause
-	primary
+	primary /truncate redu%primary_truncate
 	write sky 'name'
 	
 	! Export the continuum UV table and image to FITS
