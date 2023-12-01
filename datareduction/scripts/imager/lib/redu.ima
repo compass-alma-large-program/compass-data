@@ -55,24 +55,25 @@ begin procedure redu_run
     let clean_nkeep 70
     
     for spw /in redu%spws
-	
+
+	say 'ANSI%YELLOW'"Reducing data for "'redu%basename'", setting "'redu%setting'", spectral window "'spw''ANSI%NONE'
 	let name 'redu%basename'"-"'redu%setting'"-spw"'spw'
 	
 	! Convert the UVFITS files to UVT
 	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%basename'"/"'name'".uvt"
 	let name 'datadir'"/reduced/"'redu%basename'"/"'name'
 	read uv 'name'
-	if redu%interactive pause
+	if redu%interactive pause 'ANSI%YELLOW'"UV table loaded. You can check the result with UV_STAT, or type C to continue."'ANSI%NONE'
 	
 	! Self-calibration
 	if redu%self_calibrate then
 	    let self_display .false.
 	    let self_flag .true.
 	    let self_times 10 10 /resize
-	    ! XXX: Redefine pause when redu%interactive is .false. ?
-	    if .not.redu%interactive symbol stop continue ! avoid pauses
+	    symbol stop continue ! avoid pauses at each self-calibration loop
 	    selfcal phase
-	    if redu%interactive pause
+	    symbol stop pause
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the self-calibration. You can adjust the self-calibration parameters, or type C to continue."'ANSI%NONE'
 	    selfcal apply
 	endif
 	
@@ -84,7 +85,7 @@ begin procedure redu_run
 	
 	! Create UV tables for the lines and for the continuum
 	uv_preview clip 'redu%uv_preview_clip'
-	if redu%interactive pause
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
 	if redu%extract_continuum then
 	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
 	    ! FIXME: uv_split ignores the path for the continuum table
@@ -99,8 +100,9 @@ begin procedure redu_run
 	    read uv 'name'
 	    uv_map /continuum
 	    clean
-	    if redu%interactive pause
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    primary /truncate redu%primary_truncate
+	    f redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    write sky 'name'
 	endif
 	
@@ -109,7 +111,7 @@ begin procedure redu_run
 	read uv 'name'
 	uv_map
 	clean
-	if redu%interactive pause
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	primary /truncate redu%primary_truncate
 	write sky 'name'
 	
@@ -139,6 +141,8 @@ begin procedure redu_run
 	    sic delete 'name'"-lines.lmv-sky"
 	endif
     next
+
+    say 'ANSI%YELLOW'"All done."'ANSI%NONE'
     
 end procedure redu_run
 
