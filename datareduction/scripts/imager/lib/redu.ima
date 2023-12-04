@@ -60,6 +60,7 @@ begin procedure redu_run
 	let name 'redu%basename'"-"'redu%setting'"-spw"'spw'
 	
 	! Convert the UVFITS files to UVT
+	sic mkdir 'datadir'"/reduced/"'redu%basename'"/"
 	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%basename'"/"'name'".uvt"
 	let name 'datadir'"/reduced/"'redu%basename'"/"'name'
 	read uv 'name'
