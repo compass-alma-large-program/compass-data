@@ -62,14 +62,14 @@ imager @ redu_a
 
 It does the self-calibration, extracts the continuum and the lines,
 and images the results. It creates four files: two UV tables in
-compressed UVFITS format that contain the continuum and line
-visibilities, respectively; and two images/cubes in compressed FITS
+UVFITS format that contain the continuum and line
+visibilities, respectively; and two images/cubes in FITS format
 for the continuum image and line data cubes, respectively:
 
-* `data/reduced/bhr71/bhr71-a-spw25-cont.uvfits.gz`
-* `data/reduced/bhr71/bhr71-a-spw25-lines.uvfits.gz`
-* `data/reduced/bhr71/bhr71-a-spw25-cont.fits.gz`
-* `data/reduced/bhr71/bhr71-a-spw25-lines.fits.gz`
+* `data/reduced/bhr71/bhr71-a-spw25-cont.uvfits`
+* `data/reduced/bhr71/bhr71-a-spw25-lines.uvfits`
+* `data/reduced/bhr71/bhr71-a-spw25-cont.fits`
+* `data/reduced/bhr71/bhr71-a-spw25-lines.fits`
 
 The script takes 1.2 hours to run on 36 core server.
 

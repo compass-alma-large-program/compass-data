@@ -119,17 +119,13 @@ begin procedure redu_run
 	if redu%extract_continuum then
 	    let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
 	    fits 'name'.fits from 'name'.lmv-sky /over
-	    system "gzip -f "'name'".fits"
 	    fits 'name'.uvfits from 'name'.uvt /over
-	    system "gzip -f "'name'".uvfits"
 	endif
 	
 	! Export the line UV table and datacube to FITS
 	let name 'datadir'"/reduced/"'redu%basename'"/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
 	fits 'name'.fits from 'name'.lmv-sky /over
-	system "gzip -f "'name'".fits"
 	fits 'name'.uvfits from 'name'.uvt /over
-	system "gzip -f "'name'".uvfits"
 	
 	! Remove intermediate files
 	if redu%delete_intermediate_files then
