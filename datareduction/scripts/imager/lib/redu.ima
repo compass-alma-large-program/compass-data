@@ -57,7 +57,7 @@ begin procedure redu_run
     for spw /in redu%spws
 
 	say 'ANSI%YELLOW'"Reducing data for "'redu%basename'", setting "'redu%setting'", spectral window "'spw''ANSI%NONE'
-	let name 'redu%basename'"-"'redu%setting'"-spw"'spw'
+	let name 'redu%basename'"-set"'redu%setting'"-spw"'spw'
 	
 	! Convert the UVFITS files to UVT
 	sic mkdir 'datadir'"/reduced/"'redu%basename'"/uvtables/"
@@ -90,56 +90,56 @@ begin procedure redu_run
 	if redu%extract_continuum then
 	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
 	    ! FIXME: uv_split ignores the path for the continuum table
-	    sic rename 'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%basename'"/uvtables/"
+	    sic rename 'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%basename'"/uvtables/"
 	else
 	    uv_split /file 'name' 'name'"-lines"
 	endif
 	
 	! Make the continuum map and clean it
 	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
+	    let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    uv_map /continuum
 	    clean
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    primary /truncate redu%primary_truncate
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    sic mkdir 'datadir'"/reduced/"'redu%basename'"/cubes/"
-	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
+	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    write sky 'name'
 	endif
 	
 	! Make the line datacube cube and clean it
-	let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+	let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	read uv 'name'
 	uv_map
 	clean
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	primary /truncate redu%primary_truncate
 	sic mkdir 'datadir'"/reduced/"'redu%basename'"/cubes/"
-	let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+	let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	write sky 'name'
 	
 	! Export the continuum UV table and image to FITS
 	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
+	    let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    fits 'name'.uvfits from 'name'.uvt /over
-	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-cont"
+	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    fits 'name'.fits from 'name'.lmv-sky /over
 	endif
 	
 	! Export the line UV table and datacube to FITS
-	let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+	let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	fits 'name'.uvfits from 'name'.uvt /over
-	let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-"'redu%setting'"-spw"'spw'"-lines"
+	let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	fits 'name'.fits from 'name'.lmv-sky /over
 
 	! Remove intermediate files
 	if redu%delete_intermediate_files then
-	    let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-"'redu%setting'"-spw"'spw'
+	    let name 'datadir'"/reduced/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
 	    sic delete 'name'".uvt"
 	    sic delete 'name'"-cont.uvt"
 	    sic delete 'name'"-lines.uvt"
-	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-"'redu%setting'"-spw"'spw'
+	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
 	    sic delete 'name'"-cont.lmv-sky"
 	    sic delete 'name'"-lines.lmv-sky"
 	endif

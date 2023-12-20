@@ -26,38 +26,38 @@ These calibrated visibilities can be found on ERDA, under the
 `COMPASS/CalibratedMS` directory. Download the MS file that
 corresponds to the source and frequency setting that you want to
 reduce, (e.g. `uid___A002_X101c3b2_Xbcf0.ms.split.cal.tar` for
-BHR71-IRS1 setting A), and move it to `data/calibrated/ms`. Do not
+BHR71-IRS1 setting 1), and move it to `data/calibrated/ms`. Do not
 untar the file (it will be untared on-the-fly by the export script).
 
 ### Converting the calibrated visibilities to UVFITS
 
 IMAGER cannot work with visibilities in MS format, so they need to be
 converted to UVFITS first. This is done with the CASA scripts
-`X/export_XX.py`, where `X` is the name of source and `XX` is the
-frequency setting (e.g. `bhr71/export_a.py`).
+`X/export_setXX.py`, where `X` is the name of source and `XX` is the
+frequency setting (e.g. `bhr71/export_set1.py`).
 
 The script is run as follows:
 
 ```sh
 cd datareduction/scripts/imager/bhr71
-casa --nogui --log2term -c export_a.py
+casa --nogui --log2term -c export_set1.py
 ```
 
 It will create one UVFITS file for each spectral windows,
-e.g. `data/calibrated/uvfits/bhr71-a-spw25.uvfits`. It takes around 2
+e.g. `data/calibrated/uvfits/bhr71-set1-spw25.uvfits`. It takes around 2
 hours to run.
 
 ## Running the data reduction IMAGER script
 
-The data reduction in IMAGER is done with the `X/redu_XX.ima` scripts,
+The data reduction in IMAGER is done with the `X/redu_setXX.ima` scripts,
 where `X` is the name of source and `XX` is the frequency setting
-(e.g. `bhr71/redu_a.ima`).
+(e.g. `bhr71/redu_set1.ima`).
 
 The script is run as follows:
 
 ```sh
 cd datareduction/scripts/imager/bhr71
-imager @ redu_a
+imager @ redu_set1
 ```
 
 It does the self-calibration, extracts the continuum and the lines,
@@ -66,10 +66,10 @@ UVFITS format that contain the continuum and line
 visibilities, respectively; and two images/cubes in FITS format
 for the continuum image and line data cubes, respectively:
 
-* `data/reduced/bhr71/bhr71-a-spw25-cont.uvfits`
-* `data/reduced/bhr71/bhr71-a-spw25-lines.uvfits`
-* `data/reduced/bhr71/bhr71-a-spw25-cont.fits`
-* `data/reduced/bhr71/bhr71-a-spw25-lines.fits`
+* `data/reduced/bhr71/uvtables/bhr71-set1-spw25-cont.uvfits`
+* `data/reduced/bhr71/uvtables/bhr71-set1-spw25-lines.uvfits`
+* `data/reduced/bhr71/cubes/bhr71-set1-spw25-cont.fits`
+* `data/reduced/bhr71/cubes/bhr71-set1-spw25-lines.fits`
 
 The script takes 1.2 hours to run on 36 core server.
 
@@ -89,11 +89,11 @@ setting, follow the following steps:
     using one of the scripts for BHR71 as a template:
 
     ```sh
-    cp datareduction/imager/bhr71/redu_XX.ima datareduction/imager/X/
-    cp datareduction/imager/bhr71/export_XX.ima datareduction/imager/X/
+    cp datareduction/imager/bhr71/redu_setXX.ima datareduction/imager/X/
+    cp datareduction/imager/bhr71/export_setXX.ima datareduction/imager/X/
     ```
 
-    where `XX` is the frequency setting (e.g. `f`)
+    where `XX` is the frequency setting (e.g. `6`)
 
  3. Create a directory named `data/reduced/X` where `X`
     is the name of the source, e.g. `b335`. This directory will
@@ -105,7 +105,7 @@ Writing an export script is fairly straightforward: simply edit the
 last line of script:
 
 ```py
-export(uid = "uid___A002_X1036d05_X4eca", field = "B335", basename ="b335-f")
+export(uid = "uid___A002_X1036d05_X4eca", field = "B335", basename ="b335-set6")
 ```
 
 to set the three parameters of the `export` function:
@@ -119,8 +119,7 @@ to set the three parameters of the `export` function:
   
 * `basename`: The name of the output UVFITS file without the `uvfits` file
    extension, and not leading path. By convention, it should be the
-   name of the source name followed by a `-` and the name of the
-   setting.
+   name of the source name followed by a `-set` and the setting number.
 
 ### Writing a reduction script
 
@@ -134,11 +133,11 @@ setting. These parameters are defined in a data structure name
 ```
 
 Two parameters are mandatory: the basename of the UVFITS file and the
-name of the frequency setting. There as set as follows:
+the frequency setting number. There as set as follows:
 
 ```f90
 let redu%basename bhr71
-let redu%setting a
+let redu%setting 1
 ```
 
 Other parameters are optional and have reasonable default values (but they

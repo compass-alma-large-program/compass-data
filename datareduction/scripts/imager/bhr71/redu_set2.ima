@@ -1,4 +1,4 @@
-! Reduce the BHR71 B setup data
+! Reduce the BHR71 setting 2 data
 
 sic parallel
 
@@ -10,7 +10,7 @@ let beam_step = -1
 @ ../lib/redu init
 
 let redu%basename bhr71
-let redu%setting b
+let redu%setting 2
 
 let redu%map_size 562 562
 let redu%map_cell 0.064 0.064
