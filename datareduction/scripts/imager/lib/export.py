@@ -16,8 +16,8 @@ def export(uid, field, basename):
 
     Parameters
     ----------
-    uid : str
-        The UID of the dataset
+    uid : str or list of str
+        The UIDs of the datasets
     field : str
         The name of the field
     basename : str
@@ -34,26 +34,43 @@ def export(uid, field, basename):
 
     os.chdir(inputdir)
 
-    # Untar the file
+    if isinstance(uid, str):
+        uids = [uid]
+    else:
+        uids = uid
 
-    with tarfile.open(uid + ".ms.split.cal.tar") as tar:
-        tar.extractall()
+    # Untar the files
+
+    for uid in uids:
+        with tarfile.open(uid + ".ms.split.cal.tar") as tar:
+            tar.extractall()
 
     for spw in spws:
+        # Extract the data for the relevant field and spectral window from each dataset
+
+        ms_files = []
+        for uid_index, uid in enumerate(uids):
+            name = basename + "-spw%i" % spw + "-uid%i" % uid_index
+            shutil.rmtree(name + ".ms", ignore_errors=True)
+            ct.split(
+                vis=uid + ".ms.split.cal",
+                outputvis=name + ".ms",
+                datacolumn="data",
+                intent="OBSERVE_TARGET#ON_SOURCE",
+                field=field,
+                spw="%i" % spw,
+                keepflags=False,
+            )
+            ms_files.append(name + ".ms")
+
+        # Concatenate the MS files
+
         name = basename + "-spw%i" % spw
-
-        # Extract the data
-
         shutil.rmtree(name + ".ms", ignore_errors=True)
-        ct.split(
-            vis=uid + ".ms.split.cal",
-            outputvis=name + ".ms",
-            datacolumn="data",
-            intent="OBSERVE_TARGET#ON_SOURCE",
-            field=field,
-            spw="%i" % spw,
-            keepflags=False,
-        )
+        if len(ms_files) > 1:
+            ct.concat(vis=ms_files, concatvis=name + ".ms")
+        else:
+            os.rename(ms_files[0], name + ".ms")
 
         # Convert the velocity frame to LSR
 
@@ -84,6 +101,8 @@ def export(uid, field, basename):
 
         # Remove intermediate files
 
+        for uid in uids:
+            shutil.rmtree(name + "-" + uid + ".ms", ignore_errors=True)
         shutil.rmtree(name + ".ms", ignore_errors=True)
         shutil.rmtree(name + "-cvel.ms", ignore_errors=True)
 
@@ -92,6 +111,7 @@ def export(uid, field, basename):
     for f in glob.glob("*.last"):
         os.remove(f)
 
-    # Remove the untarred directory
+    # Remove the untarred directories
 
-    shutil.rmtree(uid + ".ms.split.cal", ignore_errors=True)
+    for uid in uids:
+        shutil.rmtree(uid + ".ms.split.cal", ignore_errors=True)
