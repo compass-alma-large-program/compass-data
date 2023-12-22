@@ -101,8 +101,8 @@ def export(uid, field, basename):
 
         # Remove intermediate files
 
-        for uid in uids:
-            shutil.rmtree(name + "-" + uid + ".ms", ignore_errors=True)
+        for uid_index, __ in enumerate(uids):
+            shutil.rmtree(name + "-uid%i" % uid_index + ".ms", ignore_errors=True)
         shutil.rmtree(name + ".ms", ignore_errors=True)
         shutil.rmtree(name + "-cvel.ms", ignore_errors=True)
 
