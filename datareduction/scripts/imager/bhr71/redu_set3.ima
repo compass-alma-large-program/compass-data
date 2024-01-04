@@ -6,10 +6,7 @@ sic parallel
 
 let redu%basename bhr71
 let redu%setting 3
-
-let redu%map_size 562 562
-let redu%map_cell 0.064 0.064
-let redu%primary_truncate .1
+@ set_redu_params
 
 @ ../lib/redu run
 @ ../lib/redu clean

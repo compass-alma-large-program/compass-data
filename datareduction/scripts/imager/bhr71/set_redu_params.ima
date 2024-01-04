@@ -1,0 +1,6 @@
+! Set reduction parameters that are common to all settings
+
+let redu%map_size 562 562
+let redu%map_cell 0.064 0.064
+let redu%primary_truncate .1
+
