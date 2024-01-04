@@ -102,6 +102,7 @@ begin procedure redu_run
 	    clean
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    primary /truncate redu%primary_truncate
+	    stat sky ! compute the noise
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    sic mkdir 'datadir'"/reduced/"'redu%basename'"/cubes/"
 	    let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
@@ -115,6 +116,7 @@ begin procedure redu_run
 	clean
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	primary /truncate redu%primary_truncate
+	stat sky
 	sic mkdir 'datadir'"/reduced/"'redu%basename'"/cubes/"
 	let name 'datadir'"/reduced/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	write sky 'name'
