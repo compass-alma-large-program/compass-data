@@ -20,6 +20,7 @@ begin procedure redu_init
 	define real redu%map_robust /global
 	define real redu%map_size[2] /global
 	define real redu%map_cell[2] /global
+	define real redu%map_convolve_resolution /global
 	define real redu%primary_truncate /global
 	
 	define logical redu%extract_continuum /global
@@ -27,6 +28,7 @@ begin procedure redu_init
 	define logical redu%uv_restore /global
 	define logical redu%jvm_correction /global
 	define logical redu%primary_beam_correction /global
+	define logical redu%convolve_common_beam /global
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
 
@@ -39,6 +41,7 @@ begin procedure redu_init
 	let redu%map_robust 1
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
+	let redu%map_convolve_resolution 1
 	let redu%primary_truncate .2
 
 	let redu%extract_continuum .true.
@@ -46,6 +49,7 @@ begin procedure redu_init
 	let redu%uv_restore .false.
 	let redu%jvm_correction .false.
 	let redu%primary_beam_correction .true.
+	let redu%convolve_common_beam .false.
 	let redu%delete_intermediate_files .true.
 	let redu%interactive .false.
 	
@@ -120,6 +124,10 @@ begin procedure redu_run
 		uv_restore
 	    endif
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+	    if redu%convolve_common_beam then
+		map_convolve clean clean gauss 'redu%map_convolve_resolution*sec'
+		if redu%interactive pause 'ANSI%YELLOW'"Done with the convolution to a common beam. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+	    endif
 	    if redu%primary_beam_correction then
 		primary /truncate redu%primary_truncate
 		if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
@@ -146,6 +154,10 @@ begin procedure redu_run
 	    uv_restore
 	endif
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+	if redu%convolve_common_beam then
+	    map_convolve clean clean gauss 'redu%map_convolve_resolution*sec'
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the convolution to a common beam. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+	endif
 	if redu%primary_beam_correction then
 	    primary /truncate redu%primary_truncate
 	    stat clean /noise sky%rms

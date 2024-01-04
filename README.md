@@ -197,6 +197,11 @@ may be also set if needed). Here is a full list:
 * `redu%primary_beam_correction`: A boolean to toggle the primary beam
   correction. If `.true.`, primary beam correction will be
   applied. Default is `.true.`.
+  
+* `redu%map_convolve_resolution`: Final spatial resolution of the
+   images/cubes in arcsecs after convolution to a common beam. It
+   corresponds to the `gauss` parameter of the the `map_convolve`
+   command. Default is `1`.  
 
 * `redu%primary_truncate`: Truncation level of the primary beam, in
   fraction of the peak. Default is `0.2`. It corresponds to the
@@ -209,6 +214,12 @@ may be also set if needed). Here is a full list:
 
 * `redu%self_calibrate`: A boolean to toggle the self-calibration. If
    `.true.` self calibration will be performed. Default is `.true.`
+
+* `redu%convolve_common_beam`:  A boolean to toggle the convolution of
+  the cubes/images with a common circular beam. If `.true.`, the
+  cubes/images will be convolved with a circular beam, which size is
+  computed from the `redu%map_convolve_resolution` parameter.  If
+  `.false.` no convolution will be performed. Default is `.false.`
 
 * `redu%delete_intermediate_files`: A boolean to toggle the deletion
    of intermediate files at the end. If `.true.` only the final
