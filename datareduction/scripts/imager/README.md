@@ -157,6 +157,10 @@ may be also set if needed). Here is a full list:
   line-free channel identification. It corresponds to the value of
   the `clip` parameter of the `uv_preview` command. Default is `3`.
   
+* `redu%uv_preview_smooth`: The number of spectral smoothings for the
+  line-free channel identification. It corresponds to the value of
+  the `smooth` parameter of the `uv_preview` command. Default is `3`.
+
 * `redu%map_robust`: Robust weighting factor. Default is `1`. It
    corresponds to the `map_robust` parameter of the `uv_map` command
    in IMAGER.

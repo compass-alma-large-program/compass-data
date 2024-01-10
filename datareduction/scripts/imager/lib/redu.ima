@@ -1,4 +1,4 @@
-! Reduction pipeline for the line and continuum observations
+! Reduction pipeline for COMPASS line and continuum observations
 
 begin procedure redu_init
 
@@ -13,6 +13,7 @@ begin procedure redu_init
 	define char*8 redu%spws[4] /global
 
 	define real redu%uv_preview_clip /global
+	define integer redu%uv_preview_smooth /global
 	define real redu%map_robust /global
 	define real redu%map_size[2] /global
 	define real redu%map_cell[2] /global
@@ -25,6 +26,7 @@ begin procedure redu_init
 
 	let redu%spws 25 27 29 31
 	let redu%uv_preview_clip 3
+	let redu%uv_preview_smooth 3
 	let redu%map_robust 1
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
@@ -85,7 +87,7 @@ begin procedure redu_run
 	write uv 'name'
 	
 	! Create UV tables for the lines and for the continuum
-	uv_preview clip 'redu%uv_preview_clip'
+	uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth'
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
 	if redu%extract_continuum then
 	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
