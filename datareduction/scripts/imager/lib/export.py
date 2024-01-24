@@ -41,7 +41,11 @@ def export(uid, field, basename):
 
     # Untar the files
 
+    untar = True
     for uid in uids:
+        if os.path.exists(uid + ".ms.split.cal"):
+            untar = False
+            break # assume that all files have been untarred
         try:
             with tarfile.open(uid + ".ms.split.cal.tar") as tar:
                 tar.extractall()
@@ -117,5 +121,6 @@ def export(uid, field, basename):
 
     # Remove the untarred directories
 
-    for uid in uids:
-        shutil.rmtree(uid + ".ms.split.cal", ignore_errors=True)
+    if untar:
+        for uid in uids:
+            shutil.rmtree(uid + ".ms.split.cal", ignore_errors=True)
