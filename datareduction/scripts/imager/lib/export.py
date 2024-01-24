@@ -42,8 +42,12 @@ def export(uid, field, basename):
     # Untar the files
 
     for uid in uids:
-        with tarfile.open(uid + ".ms.split.cal.tar") as tar:
-            tar.extractall()
+        try:
+            with tarfile.open(uid + ".ms.split.cal.tar") as tar:
+                tar.extractall()
+        except FileNotFoundError:
+            with tarfile.open(uid + ".ms.split.cal.tgz", 'r:gz') as tar:
+                tar.extractall()
 
     for spw in spws:
         # Extract the data for the relevant field and spectral window from each dataset
