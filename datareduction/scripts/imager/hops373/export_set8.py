@@ -1,5 +1,5 @@
 """
-Export HOPS-373 setup 8 data to UVFITS
+Export HOPS-373 setting 8 data to UVFITS
 
 """
 

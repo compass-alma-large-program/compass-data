@@ -1,5 +1,5 @@
 """
-Export V883_Ori setup 6 data to UVFITS
+Export V883_Ori setting 6 data to UVFITS
 
 """
 

@@ -1,5 +1,5 @@
 """
-Export IRAS4A setup 1 data to UVFITS
+Export IRAS4A setting 1 data to UVFITS
 
 """
 
