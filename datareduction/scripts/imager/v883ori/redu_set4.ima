@@ -1,0 +1,15 @@
+! Reduce V883-Ori setting 4 data
+
+sic parallel
+
+@ ../lib/redu init
+
+let redu%basename v883ori
+let redu%setting 4
+@ set_redu_params
+
+! Increase clipping value for line detection
+let redu%uv_preview_clip 4
+
+@ ../lib/redu run
+@ ../lib/redu clean
