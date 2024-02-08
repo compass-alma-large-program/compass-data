@@ -14,12 +14,16 @@ begin procedure redu_init
 	define char*16 redu%subdir /global
 
 	define integer redu%drop_edge_channels /global
+
+	! Unused parameters, kept for backward compatibility
 	define real redu%uv_preview_clip /global
 	define integer redu%uv_preview_smooth /global
 	define integer redu%uv_preview_taper /global
+
 	define real redu%map_robust /global
 	define real redu%map_size[2] /global
 	define real redu%map_cell[2] /global
+	define char*8 redu%map_continuum_method /global
 	define real redu%primary_truncate /global
 	
 	define logical redu%extract_continuum /global
@@ -33,12 +37,10 @@ begin procedure redu_init
 	let redu%drop_edge_channels 0
 	let redu%spws 25 27 29 31
 	let redu%subdir ""
-	let redu%uv_preview_clip 3
-	let redu%uv_preview_smooth 3
-	let redu%uv_preview_taper 3
 	let redu%map_robust 1
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
+	let redu%map_continuum_method "scm"
 	let redu%primary_truncate .2
 
 	let redu%extract_continuum .true.
@@ -79,7 +81,7 @@ begin procedure redu_run
 	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'name'".uvt"
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'name'
 	read uv 'name' /range redu%drop_edge_channels -1*redu%drop_edge_channels CHANNEL
-	if redu%interactive pause 'ANSI%YELLOW'"UV table loaded. You can check the result with UV_STAT, or type C to continue."'ANSI%NONE'
+	if redu%interactive pause 'ANSI%YELLOW'"UV table loaded. You can check the result with UV_STAT and UV_PREVIEW, or type C to continue."'ANSI%NONE'
 	
 	! Self-calibration
 	if redu%self_calibrate then
@@ -99,80 +101,51 @@ begin procedure redu_run
 	! Save the UV table
 	write uv 'name'
 	
-	! Create UV tables for the lines and for the continuum
-	uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth' taper 'redu%uv_preview_taper'
-	if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
-	if redu%extract_continuum then
-	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
-	    ! FIXME: uv_split ignores the path for the continuum table
-	    sic rename 'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"
-	else
-	    uv_split /file 'name' 'name'"-lines"
-	endif
-	
-	! Make the continuum map and clean it
-	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
-	    uv_map /continuum
-	    clean
-	    if redu%uv_restore then
-		if redu%jvm_correction fit /jvm
-		uv_restore
-	    endif
-	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
-	    if redu%primary_beam_correction then
-		primary /truncate redu%primary_truncate
-		if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
-		stat clean /noise sky%rms ! store the noise computed from the clean image
-	    else
-		stat clean
-	    endif
-	    sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
-	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
-	    if redu%primary_beam_correction then
-		write sky 'name'
-	    else
-		write clean 'name'
-	    endif
-	endif
-	
-	! Make the line datacube cube and clean it
-	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
-	read uv 'name'
+	! Make a datacube and clean it
 	uv_map
 	clean
+	stat clean
 	if redu%uv_restore then
 	    if redu%jvm_correction fit /jvm
 	    uv_restore
 	endif
-	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
-	if redu%primary_beam_correction then
-	    primary /truncate redu%primary_truncate
-	    stat clean /noise sky%rms
-	else
-	    stat clean
-	endif
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging. You can check the datacube with the VIEW command, or type C to continue."'ANSI%NONE'
+
+	! Compute the continuum
+	! TODO: Apply the primary beam correction
+	map_continuum clean /method 'redu%map_continuum_method'
+	clear
+	stat continuum
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the continuum computation. You can check the continuum image  with the VIEW CONTINUUM command, or type C to continue."'ANSI%NONE'
 	sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
+	if redu%extract_continuum then
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    write continuum 'name'
+	endif
+	
+	! Subtract the continuum from the datacube
+	map_combine clean SUBTRACT clean continuum
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the continuum subtraction. You can check the line datacube with the VIEW command, or type C to continue."'ANSI%NONE'
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	if redu%primary_beam_correction then
+	    primary /truncate redu%primary_truncate
+	    let sky%rms clean%rms ! store the noise values from the clean image
+	    let sky%noise clean%noise
 	    write sky 'name'
 	    let image_ext "lmv-sky"
 	else
 	    write clean 'name'
 	    let image_ext "lmv-clean"
 	endif
-	
-	! Export the continuum UV table and image to FITS
-	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
-	    fits 'name'.uvfits from 'name'.uvt /over
-	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
-	    fits 'name'.fits from 'name'.'image_ext' /over
-	endif
-	
-	! Export the line UV table and datacube to FITS
-	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
+
+	! Export the UV table, the continuum image and the line data cube to FITS
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
 	fits 'name'.uvfits from 'name'.uvt /over
+	if redu%extract_continuum then
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    ! FIXME: We should convert 'name'.'image_ext' instead
+	    fits 'name'.fits from 'name'.lmv-clean /over
+	endif
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	fits 'name'.fits from 'name'.'image_ext' /over
 
@@ -180,10 +153,9 @@ begin procedure redu_run
 	if redu%delete_intermediate_files then
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
 	    sic delete 'name'".uvt"
-	    sic delete 'name'"-cont.uvt"
-	    sic delete 'name'"-lines.uvt"
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
-	    sic delete 'name'"-cont."'image_ext'
+	    ! FIXME: We should convert 'name'"-cont."'image_ext' instead
+	    sic delete 'name'"-cont.lmv-clean"
 	    sic delete 'name'"-lines."'image_ext'
 	endif
     next

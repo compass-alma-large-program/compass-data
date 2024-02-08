@@ -68,14 +68,13 @@ cd scripts/bhr71
 imager @ redu_set1
 ```
 
-It does the self-calibration, extracts the continuum and the lines,
-and images the results. It creates four files: two UV tables in
-UVFITS format that contain the continuum and line
-visibilities, respectively; and two images/cubes in FITS format
-for the continuum image and line data cubes, respectively:
+It does the self-calibration, imaging, computes the continuum and
+subtracts it from the data cube. It creates three files: one UV tables
+in UVFITS format that contain the visibilities; and two images/cubes
+in FITS format for the continuum image and line data cubes,
+respectively:
 
-* `data/reduced/bhr71/uvtables/bhr71-set1-spw25-cont.uvfits`
-* `data/reduced/bhr71/uvtables/bhr71-set1-spw25-lines.uvfits`
+* `data/reduced/bhr71/uvtables/bhr71-set1-spw25.uvfits`
 * `data/reduced/bhr71/cubes/bhr71-set1-spw25-cont.fits`
 * `data/reduced/bhr71/cubes/bhr71-set1-spw25-lines.fits`
 
@@ -162,18 +161,6 @@ may be also set if needed). Here is a full list:
   5, the 5 first channels and the last 5 channels will be
   dropped. Default is `0`.
 
-* `redu%uv_preview_clip`: The clipping value (in sigma) for the
-  line-free channel identification. It corresponds to the value of
-  the `clip` parameter of the `uv_preview` command. Default is `3`.
-  
-* `redu%uv_preview_smooth`: The number of spectral smoothings for the
-  line-free channel identification. It corresponds to the value of
-  the `smooth` parameter of the `uv_preview` command. Default is `3`.
-
-* `redu%uv_preview_taper`: The number of scale sizes for the
-  line-free channel identification. It corresponds to the value of
-  the `taper` parameter of the `uv_preview` command. Default is `3`.
-
 * `redu%map_robust`: Robust weighting factor. Default is `1`. It
    corresponds to the `map_robust` parameter of the `uv_map` command
    in IMAGER.
@@ -185,6 +172,10 @@ may be also set if needed). Here is a full list:
 * `redu%map_cell`: Pixel size, in arcsecs. Default is `0 0`, which
    means that it is automatically set. It corresponds to the
    `map_cell` parameter of the `uv_map` command.
+   
+* `redu%map_continuum_method`: The algorithm used to compute the
+  continuum. Default is `"scm"`. It correspond to the `method`
+  parameter of the `map_continuum` command.
 
 * `redu%uv_restore`: A boolean to toggle the "restore" of the
   clean image/cubes from UV data and clean components. If `.true.`,
@@ -219,10 +210,6 @@ may be also set if needed). Here is a full list:
   If `.true.` the script will pause at each reduction step to give a
   chance to the user to check the data (see below). Default is
   `.false.`
-  
-* `redu%uv_preview_clip`: The clipping value (in sigma) for the
-  line-free channel identification. It corresponds to the value of
-  the `clip` parameter of the `uv_preview` command. Default is `3`.
   
 * `redu%subdir`: Sub-directory under `data/reduced/` in which the
   reduced data will be stored. It is useful when running tests to
