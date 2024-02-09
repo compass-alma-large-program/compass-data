@@ -1,0 +1,15 @@
+! Reduce IRAS4A setting 9 data
+
+sic parallel
+
+@ ../lib/redu init
+
+let redu%basename iras4a
+let redu%setting 9
+@ set_redu_params
+
+! Increase clipping value for line detection
+let redu%uv_preview_clip 4
+
+@ ../lib/redu run
+@ ../lib/redu clean
