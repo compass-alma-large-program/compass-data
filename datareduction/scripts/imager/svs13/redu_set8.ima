@@ -1,0 +1,15 @@
+! Reduce SVS13 setting 8 data
+
+sic parallel
+
+@ ../lib/redu init
+
+let redu%basename svs13
+let redu%setting 8
+@ set_redu_params
+
+! Increase clipping value for line detection
+let redu%uv_preview_clip 5
+
+@ ../lib/redu run
+@ ../lib/redu clean
