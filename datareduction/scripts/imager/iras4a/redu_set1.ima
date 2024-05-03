@@ -8,5 +8,8 @@ let redu%basename iras4a
 let redu%setting 1
 @ set_redu_params
 
+! Increase clipping value for line detection
+let redu%uv_preview_clip 3.5
+
 @ ../lib/redu run
 @ ../lib/redu clean
