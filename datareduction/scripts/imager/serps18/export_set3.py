@@ -1,0 +1,19 @@
+"""
+Export SerpS-18 setting 3 data to UVFITS
+
+"""
+
+import sys
+
+sys.path.append("../lib")
+from export import export
+
+export(
+    uid=[
+        "uid___A002_X117d38c_X17cb",
+        "uid___A002_X117d38c_X87e1",
+        "uid___A002_X117d38c_Xec1e",
+    ],
+    field="SerpS-MM18a",
+    basename="serps18-set3",
+)
