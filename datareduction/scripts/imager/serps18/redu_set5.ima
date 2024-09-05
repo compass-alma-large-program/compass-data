@@ -1,0 +1,15 @@
+! Reduce SerpS-18 setting 5 data
+
+sic parallel
+
+@ ../lib/redu init
+
+let redu%basename serps18
+let redu%setting 5
+@ set_redu_params
+
+! Increase clipping value for line detection
+let redu%uv_preview_clip 6
+
+@ ../lib/redu run
+@ ../lib/redu clean
