@@ -1,0 +1,12 @@
+! Reduce Serp-11 setting 5 data
+
+sic parallel
+
+@ ../lib/redu init
+
+let redu%basename serp11
+let redu%setting 5
+@ set_redu_params
+
+@ ../lib/redu run
+@ ../lib/redu clean
