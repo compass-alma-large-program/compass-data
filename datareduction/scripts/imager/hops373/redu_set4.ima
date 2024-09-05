@@ -8,5 +8,8 @@ let redu%basename hops373
 let redu%setting 4
 @ set_redu_params
 
+! Increase clipping value for line detection
+let redu%uv_preview_clip 6
+
 @ ../lib/redu run
 @ ../lib/redu clean
