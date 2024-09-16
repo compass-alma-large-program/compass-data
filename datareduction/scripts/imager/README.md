@@ -203,6 +203,11 @@ may be also set if needed). Here is a full list:
   line-free channel identification. It corresponds to the value of
   the `clip` parameter of the `uv_preview` command. Default is `3`.
   
+* `redu%subdir`: Sub-directory under `data/reduced/` in which the
+  reduced data will be stored. It is useful when running tests to
+  avoid over writing the original data. Default is `""` (no
+  sub-directory).
+
 For developing a script, `redu%interactive` is typically set to
 `.true`. This will pause the script at each step of the data
 reduction, to allow to check the data, and to adapt the reduction if
