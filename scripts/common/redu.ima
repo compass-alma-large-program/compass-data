@@ -37,7 +37,7 @@ begin procedure redu_init
 
 	let redu%drop_edge_channels 5
 	let redu%spws 25 27 29 31
-	let redu%subdir ""
+	let redu%subdir "tests/contsub/"
 	let redu%map_robust 1
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
