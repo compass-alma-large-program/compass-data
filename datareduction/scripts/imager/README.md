@@ -177,6 +177,10 @@ may be also set if needed). Here is a full list:
    means that it is automatically set. It corresponds to the
    `map_cell` parameter of the `uv_map` command.
 
+* `redu%primary_beam_correction`: A boolean to toggle the primary beam
+  correction. If `.true.`, primary beam correction will be
+  applied. Default is `.true.`.
+
 * `redu%primary_truncate`: Truncation level of the primary beam, in
   fraction of the peak. Default is `0.2`. It corresponds to the
   `truncate` parameter of the `primary` command.

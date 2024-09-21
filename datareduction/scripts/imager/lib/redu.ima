@@ -23,6 +23,7 @@ begin procedure redu_init
 	
 	define logical redu%extract_continuum /global
 	define logical redu%self_calibrate /global
+	define logical redu%primary_beam_correction /global
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
 
@@ -38,6 +39,7 @@ begin procedure redu_init
 
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
+	let redu%primary_beam_correction .true.
 	let redu%delete_intermediate_files .true.
 	let redu%interactive .false.
 	
@@ -51,6 +53,7 @@ begin procedure redu_run
     ! Run the reduction pipeline
 
     define char*32 datadir
+    define char*16 image_ext
 
     let datadir "../../../../data/"
     let map_robust redu%map_robust
@@ -107,12 +110,20 @@ begin procedure redu_run
 	    uv_map /continuum
 	    clean
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
-	    primary /truncate redu%primary_truncate
-	    if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
-	    stat clean /noise sky%rms ! store the noise computed from the clean image
+	    if redu%primary_beam_correction then
+		primary /truncate redu%primary_truncate
+		if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+		stat clean /noise sky%rms ! store the noise computed from the clean image
+	    else
+		stat clean
+	    endif
 	    sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
-	    write sky 'name'
+	    if redu%primary_beam_correction then
+		write sky 'name'
+	    else
+		write clean 'name'
+	    endif
 	endif
 	
 	! Make the line datacube cube and clean it
@@ -121,25 +132,35 @@ begin procedure redu_run
 	uv_map
 	clean
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
-	primary /truncate redu%primary_truncate
-	stat clean /noise sky%rms
+	if redu%primary_beam_correction then
+	    primary /truncate redu%primary_truncate
+	    stat clean /noise sky%rms
+	else
+	    stat clean
+	endif
 	sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
-	write sky 'name'
+	if redu%primary_beam_correction then
+	    write sky 'name'
+	    let image_ext "lmv-sky"
+	else
+	    write clean 'name'
+	    let image_ext "lmv-clean"
+	endif
 	
 	! Export the continuum UV table and image to FITS
 	if redu%extract_continuum then
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    fits 'name'.uvfits from 'name'.uvt /over
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
-	    fits 'name'.fits from 'name'.lmv-sky /over
+	    fits 'name'.fits from 'name'.'image_ext' /over
 	endif
 	
 	! Export the line UV table and datacube to FITS
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	fits 'name'.uvfits from 'name'.uvt /over
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
-	fits 'name'.fits from 'name'.lmv-sky /over
+	fits 'name'.fits from 'name'.'image_ext' /over
 
 	! Remove intermediate files
 	if redu%delete_intermediate_files then
@@ -148,8 +169,8 @@ begin procedure redu_run
 	    sic delete 'name'"-cont.uvt"
 	    sic delete 'name'"-lines.uvt"
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
-	    sic delete 'name'"-cont.lmv-sky"
-	    sic delete 'name'"-lines.lmv-sky"
+	    sic delete 'name'"-cont."'image_ext'
+	    sic delete 'name'"-lines."'image_ext'
 	endif
     next
 
