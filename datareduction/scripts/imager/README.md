@@ -181,6 +181,10 @@ may be also set if needed). Here is a full list:
   clean image/cubes from UV data and clean components. If `.true.`,
   the restore will be performed. Default is `.false.`.
 
+* `redu%jvm_correction`: A boolean to toggle the so-called JvM
+  correction during the restore. If `.true.`, the correction will be
+  applied. Default is `.false.`.
+
 * `redu%primary_beam_correction`: A boolean to toggle the primary beam
   correction. If `.true.`, primary beam correction will be
   applied. Default is `.true.`.
