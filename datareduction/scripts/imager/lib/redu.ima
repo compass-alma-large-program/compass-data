@@ -13,6 +13,7 @@ begin procedure redu_init
 	define char*8 redu%spws[4] /global
 	define char*16 redu%subdir /global
 
+	define integer redu%drop_edge_channels /global
 	define real redu%uv_preview_clip /global
 	define integer redu%uv_preview_smooth /global
 	define integer redu%uv_preview_taper /global
@@ -29,6 +30,7 @@ begin procedure redu_init
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
 
+	let redu%drop_edge_channels 0
 	let redu%spws 25 27 29 31
 	let redu%subdir ""
 	let redu%uv_preview_clip 3
@@ -76,7 +78,7 @@ begin procedure redu_run
 	sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"
 	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'name'".uvt"
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'name'
-	read uv 'name'
+	read uv 'name' /range redu%drop_edge_channels -1*redu%drop_edge_channels CHANNEL
 	if redu%interactive pause 'ANSI%YELLOW'"UV table loaded. You can check the result with UV_STAT, or type C to continue."'ANSI%NONE'
 	
 	! Self-calibration

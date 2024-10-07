@@ -153,6 +153,11 @@ may be also set if needed). Here is a full list:
 
  Note the `/resize` option to adapt the size of the array.
 
+* `redu%drop_edge_channels`: The number of channels on each edges of
+  the spectral band that will be dropped. For example, if it is set to
+  5, the 5 first channels and the last 5 channels will be
+  dropped. Default is `0`.
+
 * `redu%uv_preview_clip`: The clipping value (in sigma) for the
   line-free channel identification. It corresponds to the value of
   the `clip` parameter of the `uv_preview` command. Default is `3`.
