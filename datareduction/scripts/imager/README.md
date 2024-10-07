@@ -177,6 +177,10 @@ may be also set if needed). Here is a full list:
    means that it is automatically set. It corresponds to the
    `map_cell` parameter of the `uv_map` command.
 
+* `redu%uv_restore`: A boolean to toggle the "restore" of the
+  clean image/cubes from UV data and clean components. If `.true.`,
+  the restore will be performed. Default is `.false.`.
+
 * `redu%primary_beam_correction`: A boolean to toggle the primary beam
   correction. If `.true.`, primary beam correction will be
   applied. Default is `.true.`.

@@ -23,6 +23,7 @@ begin procedure redu_init
 	
 	define logical redu%extract_continuum /global
 	define logical redu%self_calibrate /global
+	define logical redu%uv_restore /global
 	define logical redu%primary_beam_correction /global
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
@@ -39,6 +40,7 @@ begin procedure redu_init
 
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
+	let redu%uv_restore .false.
 	let redu%primary_beam_correction .true.
 	let redu%delete_intermediate_files .true.
 	let redu%interactive .false.
@@ -109,6 +111,7 @@ begin procedure redu_run
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    uv_map /continuum
 	    clean
+	    if redu%uv_restore uv_restore
 	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	    if redu%primary_beam_correction then
 		primary /truncate redu%primary_truncate
@@ -131,6 +134,7 @@ begin procedure redu_run
 	read uv 'name'
 	uv_map
 	clean
+	if redu%uv_restore uv_restore
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
 	if redu%primary_beam_correction then
 	    primary /truncate redu%primary_truncate
