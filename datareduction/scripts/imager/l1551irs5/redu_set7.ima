@@ -1,0 +1,12 @@
+! Reduce L1551-IRS5 setting 7 data
+
+sic parallel
+
+@ ../lib/redu init
+
+let redu%basename l1551irs5
+let redu%setting 7
+@ set_redu_params
+
+@ ../lib/redu run
+@ ../lib/redu clean
