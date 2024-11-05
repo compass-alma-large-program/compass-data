@@ -7,3 +7,4 @@ let redu%drop_edge_channels 5
 let redu%uv_restore .true.
 let redu%convolve_common_beam .true.
 let redu%map_convolve_resolution .7
+let redu%subdir "tests/common-beam/"
