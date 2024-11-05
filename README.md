@@ -1,6 +1,14 @@
-# Data reduction scripts for IMAGER
+# COMPASS data reduction
 
-This directory contains data reduction scripts for
+This repository contains the data reduction scripts for
+[COMPASS](https://erda.ku.dk/vgrid/COMPASS/) (Complex Organic
+Molecules in Protostars with ALMA Spectral Surveys), an [ALMA Large
+Program](https://almascience.eso.org/alma-data/lp) to systematically
+characterize the presence of complex organic molecules of a sample of
+11 deeply embedded low-mass protostars through unbiased spectral
+surveys.
+
+The data reduction is done with
 [IMAGER](https://imager.oasu.u-bordeaux.fr), an interferometric
 imaging package.
 
@@ -34,7 +42,7 @@ untar the file (it will be untared on-the-fly by the export script).
 IMAGER cannot work with visibilities in MS format, so they need to be
 converted to UVFITS first. This is done with the CASA scripts
 `X/export_setXX.py`, where `X` is the name of source and `XX` is the
-frequency setting (e.g. `bhr71/export_set1.py`).
+frequency setting (e.g. [`bhr71/export_set1.py`](scripts/bhr71/export_set1.py)).
 
 The script is run as follows:
 
@@ -47,11 +55,11 @@ It will create one UVFITS file for each spectral windows,
 e.g. `data/calibrated/uvfits/bhr71-set1-spw25.uvfits`. It takes around 2
 hours to run.
 
-## Running the data reduction IMAGER script
+### Running the data reduction script
 
 The data reduction in IMAGER is done with the `X/redu_setXX.ima` scripts,
 where `X` is the name of source and `XX` is the frequency setting
-(e.g. `bhr71/redu_set1.ima`).
+(e.g. [`bhr71/redu_set1.ima`](scripts/bhr71/redu_set1.ima)).
 
 The script is run as follows:
 
@@ -73,46 +81,30 @@ for the continuum image and line data cubes, respectively:
 
 The script takes 1.2 hours to run on 36 core server.
 
-## Writing scripts for a new source or a new frequency setting
+## Modifying the scripts
 
-To develop reduction scripts for a new source or a new frequency
-setting, follow the following steps:
+> [!NOTE]
+> The scripts in this directory should work without any
+> modifications. Modifications the scripts are only needed to fine-tune
+> the reduction.
 
-### Initial setup
+### Export script
 
- 1. Create a directory named `datareduction/imager/X/` where `X`
-    is the name of the source, e.g. `b335`. This directory will
-    contain the reduction export and reduction scripts for that
-    source.
-
- 2. Create an export script and a reduction script in that directory,
-    using one of the scripts for BHR71 as a template:
-
-    ```sh
-    cp datareduction/imager/bhr71/redu_setXX.ima datareduction/imager/X/
-    cp datareduction/imager/bhr71/export_setXX.ima datareduction/imager/X/
-    ```
-
-    where `XX` is the frequency setting (e.g. `6`)
-
- 3. Create a directory named `data/reduced/X` where `X`
-    is the name of the source, e.g. `b335`. This directory will
-    contain the reduced data.
-
-### Writing an export script
-
-Writing an export script is fairly straightforward: simply edit the
-last line of script:
+Export scripts are fairly straightforward. They usually contains only
+one call of the `export()` function:
 
 ```py
 export(uid = "uid___A002_X1036d05_X4eca", field = "B335", basename ="b335-set6")
 ```
 
-to set the three parameters of the `export` function:
+This function is defined in the [`export.py`](scripts/common/export.py)
+module. It has three parameters:
 
 * `uid`: The UID of the dataset. This is the name of the MS file
   (without the `.ms.split.cal.tar` file extension) that contains the
-  calibrated visibilities for that source/setting.
+  calibrated visibilities for that source/setting. It also accepts a
+  list of UIDs, if the observations were obtained in several execution
+  blocks. If a list is given, these UIDs are merged before the export.
 
 * `field`: The name of the field in the MS file. This is typically
   the name of the source in capital letters.
@@ -121,12 +113,26 @@ to set the three parameters of the `export` function:
    extension, and not leading path. By convention, it should be the
    name of the source name followed by a `-set` and the setting number.
 
-### Writing a reduction script
+### Reduction script
 
-Writing a reduction script is a bit more complex, because the script
-parameters may need to be adapted to each source and frequency
-setting. These parameters are defined in a data structure name
-`redu%`, which is initialized at the beginning of the script:
+Reductions scripts are more complex, because they have several
+parameters that may need to be adapted to each source and frequency
+setting.
+
+All the data reduction steps are implemented in a single IMAGER
+procedure `@ redu`, which is defined in
+[`redu.ima`](scripts/common/redu.ima).
+
+
+This procedure has three possible arguments: `init`, `run` and
+`clean`, which are use to set the reduction parameter, to run the
+reduction, and to clean the variables and intermediate files,
+respectively.
+
+#### Setting the reduction parameters
+
+The reduction parameter are defined in a data structure named
+`redu%`, which needs to be initialized at the beginning of the script:
 
 ```f90
 @ ../common/redu init
@@ -146,12 +152,10 @@ may be also set if needed). Here is a full list:
 * `redu%spws` An array containing the spectral windows to
   reduce. Default is `25 27 29 31` (i.e. all COMPASS windows). This
   may be set to a single number for debugging purposes, e.g. with
-
- ```f90
- let redu%spws 25 /resize
- ```
-
- Note the `/resize` option to adapt the size of the array.
+  ```f90
+  let redu%spws 25 /resize
+  ```
+  Note the `/resize` option to adapt the size of the array.
 
 * `redu%drop_edge_channels`: The number of channels on each edges of
   the spectral band that will be dropped. For example, if it is set to
@@ -225,8 +229,33 @@ may be also set if needed). Here is a full list:
   avoid over writing the original data. Default is `""` (no
   sub-directory).
 
-For developing a script, `redu%interactive` is typically set to
-`.true`. This will pause the script at each step of the data
-reduction, to allow to check the data, and to adapt the reduction if
-needed (e.g. the clipping value above). In production, this should be
-set to `.false.`.
+> [!TIP]
+> The parameters which are common to all frequency settings of a given
+> source (e.g. the image size) can be defined in the
+> [`set_redu_params.ima`](scripts/bhr71/set_redu_params.ima)  file in each source directory.
+
+#### Starting the data reduction
+
+The data reduction itself is started with the `run` argument:
+
+```f90
+@ ../common/redu run
+```
+
+> [!TIP]
+> When developing a reduction script, it is recommenced to set
+> `redu%interactive` to `.true`. This will pause the script at each
+> step of the data reduction, to allow to check the data, and to adapt
+> the reduction if needed (e.g. the clipping value above).
+
+#### Cleaning the intermediate files and variables
+
+At the end of the reduction, the intermediate files and variables can
+be deleted with the `clean` argument:
+
+```f90
+@ ../common/redu clean
+```
+
+This avoids side effects when running the reduction script several
+times.
