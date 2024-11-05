@@ -26,7 +26,7 @@ def export(uid, field, basename):
     """
 
     spws = [25, 27, 29, 31]
-    datadir = "../../../../data/calibrated/"
+    datadir = "../../data/calibrated/"
     inputdir = os.path.realpath(datadir + "/ms")
     outputdir = os.path.realpath(datadir + "/uvfits")
 

@@ -61,7 +61,7 @@ begin procedure redu_run
     define char*32 datadir
     define char*16 image_ext
 
-    let datadir "../../../../data/"
+    let datadir "../../data/"
     let map_robust redu%map_robust
     let map_size redu%map_size
     let map_cell redu%map_cell

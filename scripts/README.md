@@ -39,7 +39,7 @@ frequency setting (e.g. `bhr71/export_set1.py`).
 The script is run as follows:
 
 ```sh
-cd datareduction/scripts/imager/bhr71
+cd scripts/bhr71
 casa --nogui --log2term -c export_set1.py
 ```
 
@@ -56,7 +56,7 @@ where `X` is the name of source and `XX` is the frequency setting
 The script is run as follows:
 
 ```sh
-cd datareduction/scripts/imager/bhr71
+cd scripts/bhr71
 imager @ redu_set1
 ```
 
