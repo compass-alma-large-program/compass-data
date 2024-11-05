@@ -4,7 +4,7 @@ Export B335 setting 8 data to UVFITS
 """
 
 import sys
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

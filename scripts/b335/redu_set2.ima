@@ -2,7 +2,7 @@
 
 sic parallel
 
-@ ../lib/redu init
+@ ../common/redu init
 
 let redu%basename b335
 let redu%setting 2
@@ -13,5 +13,5 @@ let redu%setting 2
 let redu%uv_preview_clip 5
 let redu%uv_preview_smooth 2
 
-@ ../lib/redu run
-@ ../lib/redu clean
+@ ../common/redu run
+@ ../common/redu clean

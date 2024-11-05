@@ -5,7 +5,7 @@ Export L1551-IRS5 setting 3 data to UVFITS
 
 import sys
 
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

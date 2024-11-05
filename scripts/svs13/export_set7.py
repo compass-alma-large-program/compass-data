@@ -5,7 +5,7 @@ Export SVS13 setting 7 data to UVFITS
 
 import sys
 
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

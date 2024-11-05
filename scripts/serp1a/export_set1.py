@@ -4,7 +4,7 @@ Export Serp-1a setting 1 data to UVFITS
 """
 
 import sys
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

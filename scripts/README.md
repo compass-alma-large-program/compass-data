@@ -129,7 +129,7 @@ setting. These parameters are defined in a data structure name
 `redu%`, which is initialized at the beginning of the script:
 
 ```f90
-@ ../lib/redu init
+@ ../common/redu init
 ```
 
 Two parameters are mandatory: the basename of the UVFITS file and the

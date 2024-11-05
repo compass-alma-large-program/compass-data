@@ -5,7 +5,7 @@ Export Serp-11 setting 5 data to UVFITS
 
 import sys
 
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

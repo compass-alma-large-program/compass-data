@@ -2,7 +2,7 @@
 
 sic parallel
 
-@ ../lib/redu init
+@ ../common/redu init
 
 let redu%basename serp1a
 let redu%setting 1
@@ -11,5 +11,5 @@ let redu%setting 1
 ! Increase clipping value for line detection
 let redu%uv_preview_clip 5
 
-@ ../lib/redu run
-@ ../lib/redu clean
+@ ../common/redu run
+@ ../common/redu clean

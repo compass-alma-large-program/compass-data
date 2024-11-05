@@ -5,7 +5,7 @@ Export V883_Ori setting 8 data to UVFITS
 
 import sys
 
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

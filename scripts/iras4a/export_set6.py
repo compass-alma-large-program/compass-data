@@ -5,7 +5,7 @@ Export IRAS4A setting 6 data to UVFITS
 
 import sys
 
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(

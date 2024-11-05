@@ -23,7 +23,7 @@ begin procedure redu_init
 	define real redu%primary_truncate /global
 	
 	define logical redu%extract_continuum /global
-	define logical redu%self_calibrate /global
+	define logical redu%self_cacommonrate /global
 	define logical redu%uv_restore /global
 	define logical redu%jvm_correction /global
 	define logical redu%primary_beam_correction /global
@@ -42,7 +42,7 @@ begin procedure redu_init
 	let redu%primary_truncate .2
 
 	let redu%extract_continuum .true.
-	let redu%self_calibrate .true.
+	let redu%self_cacommonrate .true.
 	let redu%uv_restore .false.
 	let redu%jvm_correction .false.
 	let redu%primary_beam_correction .true.
@@ -81,15 +81,15 @@ begin procedure redu_run
 	read uv 'name' /range redu%drop_edge_channels -1*redu%drop_edge_channels CHANNEL
 	if redu%interactive pause 'ANSI%YELLOW'"UV table loaded. You can check the result with UV_STAT, or type C to continue."'ANSI%NONE'
 	
-	! Self-calibration
-	if redu%self_calibrate then
+	! Self-cacommonration
+	if redu%self_cacommonrate then
 	    let self_display .false.
 	    let self_flag .true.
 	    let self_times 10 10 /resize
-	    symbol stop continue ! avoid pauses at each self-calibration loop
+	    symbol stop continue ! avoid pauses at each self-cacommonration loop
 	    selfcal phase
 	    symbol stop pause
-	    if redu%interactive pause 'ANSI%YELLOW'"Done with the self-calibration. You can adjust the self-calibration parameters, or type C to continue."'ANSI%NONE'
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the self-cacommonration. You can adjust the self-cacommonration parameters, or type C to continue."'ANSI%NONE'
 	    selfcal apply
 	endif
 	

@@ -5,7 +5,7 @@ Export HOPS-373 setting 1 data to UVFITS
 
 import sys
 
-sys.path.append("../lib")
+sys.path.append("../common")
 from export import export
 
 export(
