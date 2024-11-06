@@ -1,0 +1,15 @@
+! Reduce HOPS-373 setting 2 data
+
+sic parallel
+
+@ ../common/redu init
+
+let redu%basename hops373
+let redu%setting 2
+@ set_redu_params
+
+! Increase clipping value for line detection
+let redu%uv_preview_clip 5
+
+@ ../common/redu run
+@ ../common/redu clean

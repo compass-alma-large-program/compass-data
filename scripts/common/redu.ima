@@ -1,0 +1,220 @@
+! Reduction pipeline for COMPASS line and continuum observations
+
+begin procedure redu_init
+
+    ! Define user parameters
+    
+    if .not.exist(redu) then
+
+	define structure redu /global
+	
+	define char*16 redu%basename /global
+	define char*8 redu%setting /global
+	define char*8 redu%spws[4] /global
+	define char*16 redu%subdir /global
+
+	define integer redu%drop_edge_channels /global
+	define real redu%uv_preview_clip /global
+	define integer redu%uv_preview_smooth /global
+	define integer redu%uv_preview_taper /global
+	define real redu%map_robust /global
+	define real redu%map_size[2] /global
+	define real redu%map_cell[2] /global
+	define real redu%primary_truncate /global
+	
+	define logical redu%extract_continuum /global
+	define logical redu%self_calibrate /global
+	define logical redu%uv_restore /global
+	define logical redu%jvm_correction /global
+	define logical redu%primary_beam_correction /global
+	define logical redu%delete_intermediate_files /global
+	define logical redu%interactive /global
+
+	let redu%drop_edge_channels 0
+	let redu%spws 25 27 29 31
+	let redu%subdir ""
+	let redu%uv_preview_clip 3
+	let redu%uv_preview_smooth 3
+	let redu%uv_preview_taper 3
+	let redu%map_robust 1
+	let redu%map_size 0 0
+	let redu%map_cell 0 0
+	let redu%primary_truncate .2
+
+	let redu%extract_continuum .true.
+	let redu%self_calibrate .true.
+	let redu%uv_restore .false.
+	let redu%jvm_correction .false.
+	let redu%primary_beam_correction .true.
+	let redu%delete_intermediate_files .true.
+	let redu%interactive .false.
+	
+    endif
+    
+end procedure redu_init	
+
+
+begin procedure redu_run
+
+    ! Run the reduction pipeline
+
+    define char*32 datadir
+    define char*16 image_ext
+
+    let datadir "../../data/"
+    let map_robust redu%map_robust
+    let map_size redu%map_size
+    let map_cell redu%map_cell
+
+    ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
+    let clean_nkeep 70
+    
+    for spw /in redu%spws
+
+	say 'ANSI%YELLOW'"Reducing data for "'redu%basename'", setting "'redu%setting'", spectral window "'spw''ANSI%NONE'
+	let name 'redu%basename'"-set"'redu%setting'"-spw"'spw'
+	
+	! Convert the UVFITS files to UVT
+	sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"
+	@ fits_to_uvt 'datadir'"/calibrated/uvfits/"'name'".uvfits" 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'name'".uvt"
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'name'
+	read uv 'name' /range redu%drop_edge_channels -1*redu%drop_edge_channels CHANNEL
+	if redu%interactive pause 'ANSI%YELLOW'"UV table loaded. You can check the result with UV_STAT, or type C to continue."'ANSI%NONE'
+	
+	! Self-calibration
+	if redu%self_calibrate then
+	    let self_display .false.
+	    let self_flag .true.
+	    let self_times 10 10 /resize
+	    symbol stop continue ! avoid pauses at each self-calibration loop
+	    selfcal phase
+	    symbol stop pause
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the self-calibration. You can adjust the self-calibration parameters, or type C to continue."'ANSI%NONE'
+	    selfcal apply
+	endif
+	
+	! Time-average
+	uv_time
+	
+	! Save the UV table
+	write uv 'name'
+	
+	! Create UV tables for the lines and for the continuum
+	uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth' taper 'redu%uv_preview_taper'
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
+	if redu%extract_continuum then
+	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
+	    ! FIXME: uv_split ignores the path for the continuum table
+	    sic rename 'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"
+	else
+	    uv_split /file 'name' 'name'"-lines"
+	endif
+	
+	! Make the continuum map and clean it
+	if redu%extract_continuum then
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    uv_map /continuum
+	    clean
+	    if redu%uv_restore then
+		if redu%jvm_correction fit /jvm
+		uv_restore
+	    endif
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the imaging of the continuum. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+	    if redu%primary_beam_correction then
+		primary /truncate redu%primary_truncate
+		if redu%interactive pause 'ANSI%YELLOW'"Done with the primary beam correction. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+		stat clean /noise sky%rms ! store the noise computed from the clean image
+	    else
+		stat clean
+	    endif
+	    sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    if redu%primary_beam_correction then
+		write sky 'name'
+	    else
+		write clean 'name'
+	    endif
+	endif
+	
+	! Make the line datacube cube and clean it
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
+	read uv 'name'
+	uv_map
+	clean
+	if redu%uv_restore then
+	    if redu%jvm_correction fit /jvm
+	    uv_restore
+	endif
+	if redu%interactive pause 'ANSI%YELLOW'"Done with the line imaging. You can check it with the VIEW command, or type C to continue."'ANSI%NONE'
+	if redu%primary_beam_correction then
+	    primary /truncate redu%primary_truncate
+	    stat clean /noise sky%rms
+	else
+	    stat clean
+	endif
+	sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
+	if redu%primary_beam_correction then
+	    write sky 'name'
+	    let image_ext "lmv-sky"
+	else
+	    write clean 'name'
+	    let image_ext "lmv-clean"
+	endif
+	
+	! Export the continuum UV table and image to FITS
+	if redu%extract_continuum then
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    fits 'name'.uvfits from 'name'.uvt /over
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    fits 'name'.fits from 'name'.'image_ext' /over
+	endif
+	
+	! Export the line UV table and datacube to FITS
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
+	fits 'name'.uvfits from 'name'.uvt /over
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
+	fits 'name'.fits from 'name'.'image_ext' /over
+
+	! Remove intermediate files
+	if redu%delete_intermediate_files then
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
+	    sic delete 'name'".uvt"
+	    sic delete 'name'"-cont.uvt"
+	    sic delete 'name'"-lines.uvt"
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
+	    sic delete 'name'"-cont."'image_ext'
+	    sic delete 'name'"-lines."'image_ext'
+	endif
+    next
+
+    say 'ANSI%YELLOW'"All done."'ANSI%NONE'
+    
+end procedure redu_run
+
+
+begin procedure redu_cleanup
+
+    ! Cleanup files and variables
+    
+    sic delete selfcal-PHASE.last
+    sic delete selfcal-PHASE.last~
+    sic delete selfcal.tmp
+    sic delete test.gdf
+    delete /var redu
+
+end procedure redu_cleanup
+
+
+! Main program
+
+if "x&1".eq."xinit" then
+    @ redu_init
+else if "x&1".eq."xrun" then
+    @ redu_run
+else if "x&1".eq."xclean" then
+    @ redu_cleanup
+else
+    message e redu "Usage: redu COMMAND"
+    return base
+endif

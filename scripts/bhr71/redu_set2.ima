@@ -1,0 +1,17 @@
+! Reduce the BHR71 setting 2 data
+
+sic parallel
+
+! FIXME: IMAGER 3.7.0-4 fails to determine the number of independent beams
+! for the data reduction. Use a different beam for each channel until this
+! is fixed.
+let beam_step = -1
+
+@ ../common/redu init
+
+let redu%basename bhr71
+let redu%setting 2
+@ set_redu_params
+
+@ ../common/redu run
+@ ../common/redu clean

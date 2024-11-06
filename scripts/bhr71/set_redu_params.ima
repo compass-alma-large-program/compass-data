@@ -1,0 +1,7 @@
+! Set reduction parameters that are common to all settings
+
+let redu%map_size 720 720
+let redu%map_cell 0.06 0.06
+let redu%primary_truncate .1
+let redu%drop_edge_channels 5
+let redu%uv_restore .true.

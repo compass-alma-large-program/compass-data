@@ -1,0 +1,12 @@
+! Reduce the BHR71 setting 8 data
+
+sic parallel
+
+@ ../common/redu init
+
+let redu%basename bhr71
+let redu%setting 8
+@ set_redu_params
+
+@ ../common/redu run
+@ ../common/redu clean
