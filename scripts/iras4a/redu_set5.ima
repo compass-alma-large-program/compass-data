@@ -7,9 +7,6 @@ sic parallel
 let redu%basename iras4a
 let redu%setting 5
 @ set_redu_params
-let redu%interactive .true.
-let redu%spws 25 /resize
-let redu%subdir "/tests/"
 
 @ ../common/redu run
 @ ../common/redu clean
