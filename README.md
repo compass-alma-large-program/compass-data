@@ -14,12 +14,12 @@ imaging package.
 
 ## Prerequisites
 
-* IMAGER (>= 3.6.0)
-* CASA (>= 6.2.0)
+* [IMAGER](https://imager.oasu.u-bordeaux.fr) (>= 3.6.0)
+* [CASA](https://casa.nrao.edu) (>= 6.2.0)
 
-IMAGER is part of the Gildas suite. If you have a recent version of
-Gildas installed on your machine, you probably have IMAGER installed
-already.
+> [!TIP]
+> If you have [Nix](https://nixos.org) installed on your computer, typing `nix-shell` 
+> in this directory should start a shell with IMAGER installed.
 
 ## Running the scripts
 
