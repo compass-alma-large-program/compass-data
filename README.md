@@ -14,7 +14,7 @@ imaging package.
 
 ## Prerequisites
 
-* [IMAGER](https://imager.oasu.u-bordeaux.fr) (>= 3.6.0)
+* [IMAGER](https://imager.oasu.u-bordeaux.fr) (>= 4.2-08)
 * [CASA](https://casa.nrao.edu) (>= 6.2.0)
 
 > [!TIP]

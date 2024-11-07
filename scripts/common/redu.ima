@@ -67,9 +67,6 @@ begin procedure redu_run
     let map_robust redu%map_robust
     let map_size redu%map_size
     let map_cell redu%map_cell
-
-    ! FIXME: The default value has changed in v3.7-04. Set it by hand until this is fixed.
-    let clean_nkeep 70
     
     for spw /in redu%spws
 
