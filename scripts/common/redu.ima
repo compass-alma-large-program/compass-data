@@ -17,6 +17,7 @@ begin procedure redu_init
 	define real redu%uv_preview_clip /global
 	define integer redu%uv_preview_smooth /global
 	define integer redu%uv_preview_taper /global
+	define logical redu%uv_preview_save_plot /global
 	define real redu%map_robust /global
 	define real redu%map_size[2] /global
 	define real redu%map_cell[2] /global
@@ -36,6 +37,7 @@ begin procedure redu_init
 	let redu%uv_preview_clip 3
 	let redu%uv_preview_smooth 3
 	let redu%uv_preview_taper 3
+	let redu%uv_preview_save_plot .false.
 	let redu%map_robust 1
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
@@ -101,6 +103,7 @@ begin procedure redu_run
 	
 	! Create UV tables for the lines and for the continuum
 	uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth' taper 'redu%uv_preview_taper'
+	if redu%uv_preview_save_plot hardcopy 'name'"-uv_preview.png" /device png /overwrite
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
 	if redu%extract_continuum then
 	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
