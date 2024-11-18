@@ -188,7 +188,7 @@ may be also set if needed). Here is a full list:
 
 * `redu%uv_restore`: A boolean to toggle the "restore" of the
   clean image/cubes from UV data and clean components. If `.true.`,
-  the restore will be performed. Default is `.false.`.
+  the restore will be performed. Default is `.true.`.
 
 * `redu%jvm_correction`: A boolean to toggle the so-called JvM
   correction during the restore. If `.true.`, the correction will be

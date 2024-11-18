@@ -43,7 +43,7 @@ begin procedure redu_init
 
 	let redu%extract_continuum .true.
 	let redu%self_calibrate .true.
-	let redu%uv_restore .false.
+	let redu%uv_restore .true.
 	let redu%jvm_correction .false.
 	let redu%primary_beam_correction .true.
 	let redu%delete_intermediate_files .true.
