@@ -8,10 +8,5 @@ let redu%basename hops108
 let redu%setting 5
 @ set_redu_params
 
-! Increase clipping value and decrease the number of spectral
-! smoothing for line detection
-let redu%uv_preview_clip 4
-let redu%uv_preview_smooth 2
-
 @ ../common/redu run
 @ ../common/redu clean

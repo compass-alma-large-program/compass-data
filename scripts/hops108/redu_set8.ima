@@ -8,9 +8,6 @@ let redu%basename hops108
 let redu%setting 8
 @ set_redu_params
 
-! Increase clipping value for line detection
-let redu%uv_preview_clip 4.5
-
 ! Spectral window 31 has a few channels with a different weight at the
 ! center of the band. Ignore these differences so that we can use a
 ! single beam over the entire band.
