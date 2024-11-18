@@ -30,7 +30,7 @@ begin procedure redu_init
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
 
-	let redu%drop_edge_channels 0
+	let redu%drop_edge_channels 5
 	let redu%spws 25 27 29 31
 	let redu%subdir ""
 	let redu%uv_preview_clip 3
