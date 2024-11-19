@@ -8,8 +8,5 @@ let redu%basename l1551irs5
 let redu%setting 6
 @ set_redu_params
 
-! Increase clipping value for line detection
-let redu%uv_preview_clip 4
-
 @ ../common/redu run
 @ ../common/redu clean
