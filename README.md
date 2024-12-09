@@ -174,7 +174,11 @@ may be also set if needed). Here is a full list:
 
 * `redu%map_continuum_method`: The algorithm used to compute the
   continuum. Default is `"scm"`. It correspond to the `method`
-  parameter of the `map_continuum` command.
+  parameter of the `map_continuum` command. It correspond to the
+  `Threshold` parameter of the `map_continuum` command.
+
+* `redu%map_continuum_threshold`: The threshold used to compute the
+  continuum, in sigma. Default is `3.5`.
 
 * `redu%uv_restore`: A boolean to toggle the "restore" of the
   clean image/cubes from UV data and clean components. If `.true.`,

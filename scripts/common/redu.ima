@@ -25,6 +25,7 @@ begin procedure redu_init
 	define real redu%map_size[2] /global
 	define real redu%map_cell[2] /global
 	define char*8 redu%map_continuum_method /global
+	define real redu%map_continuum_threshold /global
 	define real redu%primary_truncate /global
 	
 	define logical redu%extract_continuum /global
@@ -42,6 +43,7 @@ begin procedure redu_init
 	let redu%map_size 0 0
 	let redu%map_cell 0 0
 	let redu%map_continuum_method "scm"
+	let redu%map_continuum_threshold 3.5
 	let redu%primary_truncate .2
 
 	let redu%extract_continuum .true.
@@ -112,7 +114,7 @@ begin procedure redu_run
 
 	! Compute the continuum
 	! TODO: Apply the primary beam correction
-	map_continuum clean /method 'redu%map_continuum_method'
+	map_continuum clean /method 'redu%map_continuum_method' 'redu%map_continuum_threshold'
 	clear
 	stat continuum
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the continuum computation. You can check the continuum image  with the VIEW CONTINUUM command, or type C to continue."'ANSI%NONE'
