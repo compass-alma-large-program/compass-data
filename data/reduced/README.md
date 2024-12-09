@@ -16,12 +16,11 @@ lines, e.g.:
 - `bhr71-set1-spw25-cont.fits`
 - `bhr71-set1-spw25-lines.fits`
 
-The UV tables are stored in the `uvtables` sub-directory. Likewise
-there are two UVFITS files for each frequency setting and spectral
-window, e.g.:
+The UV tables are stored in the `uvtables` sub-directory. There is one
+UVFITS file for each frequency setting and spectral window, e.g.:
 
-- `bhr71-set1-spw25-cont.uvfits`
-- `bhr71-set1-spw25-lines.uvfits`
+- `bhr71-set1-spw25.uvfits`
+
+Note that the continuum is not subtracted from the UV tables.
 
 See the `CHANGELOG.md` file in each source directory for a change log.
-
