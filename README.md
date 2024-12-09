@@ -27,8 +27,7 @@ imaging package.
 
 The scripts expect to find the calibrated visibilities (in MS format),
 into the `data/calibrated/ms` directory, at the root of this
-repository. If you have cloned this repository on your computer, this
-directory structure should have been created already.
+repository.
 
 These calibrated visibilities can be found on ERDA, under the
 `COMPASS/CalibratedMS` directory. Download the MS file that
