@@ -115,7 +115,6 @@ begin procedure redu_run
 	! Compute the continuum
 	! TODO: Apply the primary beam correction
 	map_continuum clean /method 'redu%map_continuum_method' 'redu%map_continuum_threshold'
-	clear
 	stat continuum
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the continuum computation. You can check the continuum image  with the VIEW CONTINUUM command, or type C to continue."'ANSI%NONE'
 	sic mkdir 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"
@@ -125,7 +124,15 @@ begin procedure redu_run
 	endif
 
 	! Subtract the continuum from the datacube
+	! XXX: map_combine always produces cubes in Kelvins, but it
+	! does not update the noise values accordingly. Convert to K
+	! before, and back to Jy/beam after, as a workaround.
+	specify clean unit K
+	specify continuum unit K
 	map_combine clean SUBTRACT clean continuum
+	specify clean unit JY/BEAM
+	specify continuum unit JY/BEAM
+	stat clean
 	if redu%interactive pause 'ANSI%YELLOW'"Done with the continuum subtraction. You can check the line datacube with the VIEW command, or type C to continue."'ANSI%NONE'
 	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
 	if redu%primary_beam_correction then
