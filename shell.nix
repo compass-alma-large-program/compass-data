@@ -8,9 +8,9 @@ with import (fetchTarball {
 }) { };
 let
   nur = import (fetchTarball {
-    # IMAGER 4.2-08
-    url = "https://github.com/nix-community/NUR/archive/bfd50d178dff545abb87dbf0663a3bd7abfad92d.tar.gz";
-    sha256 = "0wcjf0vm9f6himd1iy0p8r9sq2q7xi5qvmnd5zzwhnl422q7gylm";
+    # IMAGER 4.4-01
+    url = "https://github.com/nix-community/NUR/archive/1a4eeb934b09137c2978ef07b61ff31ee3a7e26e.tar.gz";
+    sha256 = "16lnjfar08p5mrkk3r6dfl1wxp4h1cfkn4icvbzgq7h8yx4d0zwm";
   }) { inherit pkgs; };
   imager = nur.repos.smaret.imager;
 in
