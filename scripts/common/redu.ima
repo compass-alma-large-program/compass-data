@@ -49,7 +49,7 @@ begin procedure redu_init
 	let redu%uv_restore .true.
 	let redu%jvm_correction .false.
 	let redu%primary_beam_correction .true.
-	let redu%subtract_baseline .true.
+	let redu%subtract_baseline .false.
 	let redu%delete_intermediate_files .true.
 	let redu%interactive .false.
 	
