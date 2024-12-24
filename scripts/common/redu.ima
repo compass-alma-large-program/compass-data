@@ -28,6 +28,7 @@ begin procedure redu_init
 	define logical redu%uv_restore /global
 	define logical redu%jvm_correction /global
 	define logical redu%primary_beam_correction /global
+	define logical redu%subtract_baseline /global
 	define logical redu%delete_intermediate_files /global
 	define logical redu%interactive /global
 
@@ -48,6 +49,7 @@ begin procedure redu_init
 	let redu%uv_restore .true.
 	let redu%jvm_correction .false.
 	let redu%primary_beam_correction .true.
+	let redu%subtract_baseline .true.
 	let redu%delete_intermediate_files .true.
 	let redu%interactive .false.
 	
@@ -98,21 +100,19 @@ begin procedure redu_run
 	! Save the UV table
 	write uv 'name'
 	
-	! Create UV tables for the lines and for the continuum
-	uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth' taper 'redu%uv_preview_taper'
-	if redu%uv_preview_save_plot hardcopy 'name'"-uv_preview.png" /device png /overwrite
-	if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
+	! Create a UV table for the continuum
 	if redu%extract_continuum then
-	    uv_split /file 'name' 'name'"-lines" 'name'"-cont"
-	    ! FIXME: uv_split ignores the path for the continuum table
-	    sic rename 'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont.uvt" 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"
-	else
-	    uv_split /file 'name' 'name'"-lines"
+	    uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth' taper 'redu%uv_preview_taper'
+	    if redu%uv_preview_save_plot hardcopy 'name'"-uv_preview.png" /device png /overwrite
+	    if redu%interactive pause 'ANSI%YELLOW'"Done with the line-free channels identification. You can check that the results are reasonable, or type C to continue."'ANSI%NONE'
+	    uv_filter
+	    uv_compress /continuum
+	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
+	    write uv 'name'
 	endif
 	
-	! Make the continuum map and clean it
+	! Make a continuum map and clean it
 	if redu%extract_continuum then
-	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-cont"
 	    uv_map /continuum
 	    clean
 	    if redu%uv_restore then
@@ -135,10 +135,19 @@ begin procedure redu_run
 		write clean 'name'
 	    endif
 	endif
-	
-	! Make the line datacube cube and clean it
-	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'"-lines"
+
+	! Make a UV table for the lines
+	let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
+	sic rename 'name'".uvt" 'name'"-lines.uvt"
+	let name 'name'"-lines"
 	read uv 'name'
+	if redu%subtract_baseline then
+	    uv_preview clip 'redu%uv_preview_clip' smooth 'redu%uv_preview_smooth' taper 'redu%uv_preview_taper'
+	    uv_baseline ! substract a baseline
+	    write uv 'name'
+	endif
+
+	! Make a line datacube cube and clean it
 	uv_map
 	clean
 	if redu%uv_restore then
@@ -179,7 +188,6 @@ begin procedure redu_run
 	! Remove intermediate files
 	if redu%delete_intermediate_files then
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/uvtables/"'redu%basename'"-set"'redu%setting'"-spw"'spw'
-	    sic delete 'name'".uvt"
 	    sic delete 'name'"-cont.uvt"
 	    sic delete 'name'"-lines.uvt"
 	    let name 'datadir'"/reduced/"'redu%subdir'"/"'redu%basename'"/cubes/"'redu%basename'"-set"'redu%setting'"-spw"'spw'

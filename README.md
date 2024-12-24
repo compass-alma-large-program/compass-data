@@ -201,6 +201,10 @@ may be also set if needed). Here is a full list:
   correction. If `.true.`, primary beam correction will be
   applied. Default is `.true.`.
 
+* `redu%subtract_baseline`: A boolean to toggle the baseline
+  subtraction. If `.true.`, a baseline will be removed from line UV
+  tables. Default is `.true.`
+
 * `redu%primary_truncate`: Truncation level of the primary beam, in
   fraction of the peak. Default is `0.2`. It corresponds to the
   `truncate` parameter of the `primary` command.
