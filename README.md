@@ -199,7 +199,7 @@ may be also set if needed). Here is a full list:
 
 * `redu%primary_beam_correction`: A boolean to toggle the primary beam
   correction. If `.true.`, primary beam correction will be
-  applied. Default is `.true.`.
+  applied. Default is `.false.`.
 
 * `redu%subtract_baseline`: A boolean to toggle the baseline
   subtraction. If `.true.`, a baseline will be removed from line UV
