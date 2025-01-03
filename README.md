@@ -29,16 +29,16 @@ RAM. The observations of SVS13 and L1551-IRS5 were obtained with a
 more extended ALMA configuration than the other sources, so the
 reduction of these observations require more RAM (350 GB).
 
-The whole reduction data require 35 TB of disk space (12 TB for
-calibrated visibilities in MS format, 13 TB for the calibrated
-visibilities in UVFITS format, and 10 TB for the reduced data.
+The entire data reduction process requires 35 TB of disk space (12 TB
+for calibrated visibilities in MS format, 13 TB for the calibrated
+visibilities in UVFITS format, and 10 TB for the reduced data).
 
 ## Running the scripts
 
 ### Getting the calibrated visibilities
 
 The scripts expect to find the calibrated visibilities (in MS format),
-into the `data/calibrated/ms` directory, at the root of this
+in the `data/calibrated/ms` directory, at the root of this
 repository.
 
 These calibrated visibilities can be found on ERDA, under the
@@ -62,7 +62,7 @@ cd scripts/bhr71
 casa --nogui --log2term -c export_set1.py
 ```
 
-It will create one UVFITS file for each spectral windows,
+It will create one UVFITS file for each spectral window,
 e.g. `data/calibrated/uvfits/bhr71-set1-spw25.uvfits`. It takes around 2
 hours to run.
 
@@ -177,7 +177,7 @@ may be also set if needed). Here is a full list:
 
 * `redu%drop_edge_channels`: The number of channels on each edges of
   the spectral band that will be dropped. For example, if it is set to
-  5, the 5 first channels and the last 5 channels will be
+  5, the first 5 channels and the last 5 channels will be
   dropped. Default is `5`.
 
 * `redu%uv_preview_clip`: The clipping value (in sigma) for the
