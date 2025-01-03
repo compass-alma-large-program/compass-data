@@ -21,6 +21,18 @@ imaging package.
 > If you have [Nix](https://nixos.org) installed on your computer, typing `nix-shell` 
 > in this directory should start a shell with IMAGER installed.
 
+## Hardware requirements
+
+The IMAGER reduction scripts require a multi-core computer (the
+scripts were tested on a 36 cores server), with at least 150 GB of
+RAM. The observations of SVS13 and L1551-IRS5 were obtained with a
+more extended ALMA configuration than the other sources, so the
+reduction of these observations require more RAM (350 GB).
+
+The whole reduction data require 35 TB of disk space (12 TB for
+calibrated visibilities in MS format, 13 TB for the calibrated
+visibilities in UVFITS format, and 10 TB for the reduced data.
+
 ## Running the scripts
 
 ### Getting the calibrated visibilities
