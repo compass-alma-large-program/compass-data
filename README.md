@@ -66,7 +66,7 @@ It will create one UVFITS file for each spectral window,
 e.g. `data/calibrated/uvfits/bhr71-set1-spw25.uvfits`. It takes around 2
 hours to run.
 
-> [TIP!]
+> [!TIP]
 > You may encounter the following error when running the export script:
 > ```
 > FileNotFoundError: [Errno 2] No such file or directory: '.casa/casa2gildas.py'
