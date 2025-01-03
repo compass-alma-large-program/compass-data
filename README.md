@@ -54,6 +54,13 @@ It will create one UVFITS file for each spectral windows,
 e.g. `data/calibrated/uvfits/bhr71-set1-spw25.uvfits`. It takes around 2
 hours to run.
 
+> [TIP!]
+> You may encounter the following error when running the export script:
+> ```
+> FileNotFoundError: [Errno 2] No such file or directory: '.casa/casa2gildas.py'
+> ```
+> This error can be ignored.
+
 ### Running the data reduction script
 
 The data reduction in IMAGER is done with the `X/redu_setXX.ima` scripts,
