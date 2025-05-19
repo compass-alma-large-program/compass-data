@@ -8,5 +8,9 @@ let redu%basename iras4a
 let redu%setting 8
 @ set_redu_params
 
+! Use the same spatial grid for all spectral windows
+let redu%map_size 960 960
+let redu%map_cell 0.04 0.04
+
 @ ../common/redu run
 @ ../common/redu clean
