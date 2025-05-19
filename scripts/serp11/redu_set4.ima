@@ -8,5 +8,9 @@ let redu%basename serp11
 let redu%setting 4
 @ set_redu_params
 
+! Use the same spatial grid for all spectral windows
+let redu%map_size 800 800
+let redu%map_cell 0.05 0.05
+
 @ ../common/redu run
 @ ../common/redu clean
