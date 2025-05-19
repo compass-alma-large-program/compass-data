@@ -11,5 +11,9 @@ let redu%setting 3
 ! Increase clipping value for line detection
 let redu%uv_preview_clip 5
 
+! Use the same spatial grid for all spectral windows
+let redu%map_size 720 720
+let redu%map_cell 0.06 0.06
+
 @ ../common/redu run
 @ ../common/redu clean
