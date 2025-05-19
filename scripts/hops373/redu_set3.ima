@@ -13,5 +13,9 @@ let redu%setting 3
 ! band.
 let beam_gap 10
 
+! Use the same spatial grid for all spectral windows
+let redu%map_size 800 800
+let redu%map_cell 0.05 0.05
+
 @ ../common/redu run
 @ ../common/redu clean
