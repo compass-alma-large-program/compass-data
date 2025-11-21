@@ -1,6 +1,6 @@
-# COMPASS data reduction
+# COMPASS data reduction pipeline
 
-This repository contains the data reduction scripts for
+This repository contains the data reduction pipeline for
 [COMPASS](https://erda.ku.dk/vgrid/COMPASS/) (Complex Organic
 Molecules in Protostars with ALMA Spectral Surveys), an [ALMA Large
 Program](https://almascience.eso.org/alma-data/lp) to systematically
@@ -8,9 +8,9 @@ characterize the presence of complex organic molecules of a sample of
 11 deeply embedded low-mass protostars through unbiased spectral
 surveys.
 
-The data reduction is done with
-[IMAGER](https://imager.oasu.u-bordeaux.fr), an interferometric
-imaging package.
+The data reduction pipeline is implemented using
+[IMAGER](https://imager.oasu.u-bordeaux.fr), an
+interferometric imaging package.
 
 ## Prerequisites
 
@@ -285,3 +285,11 @@ be deleted with the `clean` argument:
 
 This avoids side effects when running the reduction script several
 times.
+
+## Citing this repository
+
+If you use this software in your work, please cite it using the
+metadata from the [citation file](CITATION.cff). Please also cite
+Jørgensen et al. (2026) to refer to COMPASS large program, and
+Plunkett, Maret et al. (2026) to refer to the COMPASS data reduction
+approach.

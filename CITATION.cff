@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+title: COMPASS data reduction pipeline
+message: >-
+  If you use this software, please cite it using the metadata from
+  this file. Please also cite Jørgensen et al. (2026) to refer to
+  COMPASS large program, and Plunkett, Maret et al. (2026) to refer to
+  the COMPASS data reduction approach.
+type: software
+authors:
+  - family-names: Maret
+    given-names: Sébastien
+    email: sebastien.maret@univ-grenoble-alpes.fr
+    affiliation: "Univ. Grenoble Alpes, CNRS, IPAG"
+    orcid: "https://orcid.org/0000-0003-1104-4554"
+  - family-names: Plunkett
+    given-names: Adele
+    affiliation: "National Radio Astronomy Observatory"
+    orcid: "https://orcid.org/0000-0002-9912-5705"
+  - family-names: Jørgensen
+    given-names: Jes Kristian
+    affiliation: "Niels Bohr Institute, University of Copenhagen"
+    orcid: "https://orcid.org/0000-0001-9133-8047"
+abstract: >
+  Data reduction pipeline for COMPASS (Complex Organic
+  Molecules in Protostars with ALMA Spectral Surveys), an
+  ALMA Large Program to systematically characterize the
+  presence of complex organic molecules of a sample of 11
+  deeply embedded low-mass protostars through unbiased
+  spectral surveys.
+license: BSD-3-Clause
+#identifiers:
+#  - type: swh
+#    value:
+references:
+  - title: "COMPASS: Complex Organic Molecules in Protostars with ALMA Spectral Surveys: Overview of the ALMA Large Program"
+    type: article
+    authors:
+      - family-names: Jørgensen
+        given-names: Jes Kristian
+    journal: "Astronomy & Astrophysics"
+    #volume:
+    #pages:
+    year: 2026
+    #doi:
+    scope: "Cite this paper to reference the COMPASS large program."
+  - title: "COMPASS: Approach to data reduction and products for line-rich broadband (sub-)millimetre spectra"
+    type: article
+    authors:
+    - family-names: Plunkett
+      given-names: Adele
+      orcid: "https://orcid.org/0000-0002-9912-5705"
+    journal: "Astronomy & Astrophysics"
+    #volume:
+    #pages:
+    year: 2026
+    #doi:
+    scope: "Cite this paper to reference the approach used for the reduction of the COMPASS data."
