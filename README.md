@@ -293,3 +293,6 @@ metadata from the [citation file](CITATION.cff). Please also cite
 Jørgensen et al. (2026) to refer to COMPASS large program, and
 Plunkett, Maret et al. (2026) to refer to the COMPASS data reduction
 approach.
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17698493.svg)](https://doi.org/10.5281/zenodo.17698493)
+[![SWH](https://archive.softwareheritage.org/badge/swh:1:dir:2a4ab380958e2921881debd9f96b78f84a912b2c/)](https://archive.softwareheritage.org/swh:1:dir:2a4ab380958e2921881debd9f96b78f84a912b2c;origin=https://doi.org/10.5281/zenodo.17698492;visit=swh:1:snp:a504f6694002883157baafad8e05f64128afcf70;anchor=swh:1:rel:67a60fe4ecc94d61b4e7be4c9ddf6ee11c5b8c50;path=/compass-alma-large-program-compass-data-1ad136c/)

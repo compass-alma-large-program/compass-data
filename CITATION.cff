@@ -28,9 +28,11 @@ abstract: >
   deeply embedded low-mass protostars through unbiased
   spectral surveys.
 license: BSD-3-Clause
-#identifiers:
-#  - type: swh
-#    value:
+identifiers:
+   - type: doi
+     value: "10.5281/zenodo.17698492"
+   - type: swh
+     value: "swh:1:dir:2a4ab380958e2921881debd9f96b78f84a912b2c"
 references:
   - title: "COMPASS: Complex Organic Molecules in Protostars with ALMA Spectral Surveys: Overview of the ALMA Large Program"
     type: article
